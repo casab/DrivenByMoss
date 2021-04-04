@@ -22,6 +22,8 @@ import de.mossgrabers.framework.featuregroup.ViewManager;
 import de.mossgrabers.framework.utils.ButtonEvent;
 import de.mossgrabers.framework.view.Views;
 
+import java.util.Optional;
+
 
 /**
  * Mode for editing details of a track.
@@ -115,9 +117,11 @@ public class TrackDetailsMode extends BaseMode<ITrack>
     private void onFirstRowTrack (final int index)
     {
         final ITrackBank tb = this.model.getCurrentTrackBank ();
-        final ITrack t = tb.getSelectedItem ();
-        if (t == null)
+        final Optional<ITrack> track = tb.getSelectedItem ();
+        if (track.isEmpty ())
             return;
+
+        final ITrack t = track.get ();
 
         switch (index)
         {
@@ -168,21 +172,21 @@ public class TrackDetailsMode extends BaseMode<ITrack>
             switch (index)
             {
                 case 0:
-                    return cursorTrack.isActivated () ? this.isPush2 ? PushColorManager.PUSH2_COLOR_YELLOW_MD : PushColorManager.PUSH1_COLOR_YELLOW_MD : this.isPush2 ? PushColorManager.PUSH2_COLOR_YELLOW_LO : PushColorManager.PUSH1_COLOR_YELLOW_LO;
+                    return this.colorManager.getColorIndex (cursorTrack.isActivated () ? PushColorManager.PUSH_YELLOW_MD : PushColorManager.PUSH_YELLOW_LO);
                 case 1:
-                    return cursorTrack.isRecArm () ? this.isPush2 ? PushColorManager.PUSH2_COLOR_RED_HI : PushColorManager.PUSH1_COLOR_RED_HI : this.isPush2 ? PushColorManager.PUSH2_COLOR_RED_LO : PushColorManager.PUSH1_COLOR_RED_LO;
+                    return this.colorManager.getColorIndex (cursorTrack.isRecArm () ? PushColorManager.PUSH_RED_HI : PushColorManager.PUSH_RED_LO);
                 case 2:
-                    return cursorTrack.isMute () ? this.isPush2 ? PushColorManager.PUSH2_COLOR_ORANGE_HI : PushColorManager.PUSH1_COLOR_ORANGE_HI : this.isPush2 ? PushColorManager.PUSH2_COLOR_ORANGE_LO : PushColorManager.PUSH1_COLOR_ORANGE_LO;
+                    return this.colorManager.getColorIndex (cursorTrack.isMute () ? PushColorManager.PUSH_ORANGE_HI : PushColorManager.PUSH_ORANGE_LO);
                 case 3:
-                    return cursorTrack.isSolo () ? this.isPush2 ? PushColorManager.PUSH2_COLOR_ORANGE_HI : PushColorManager.PUSH1_COLOR_ORANGE_HI : this.isPush2 ? PushColorManager.PUSH2_COLOR_ORANGE_LO : PushColorManager.PUSH1_COLOR_ORANGE_LO;
+                    return this.colorManager.getColorIndex (cursorTrack.isSolo () ? PushColorManager.PUSH_ORANGE_HI : PushColorManager.PUSH_ORANGE_LO);
                 case 4:
-                    return cursorTrack.isMonitor () ? this.isPush2 ? PushColorManager.PUSH2_COLOR_GREEN_HI : PushColorManager.PUSH1_COLOR_GREEN_HI : this.isPush2 ? PushColorManager.PUSH2_COLOR_GREEN_LO : PushColorManager.PUSH1_COLOR_GREEN_LO;
+                    return this.colorManager.getColorIndex (cursorTrack.isMonitor () ? PushColorManager.PUSH_GREEN_HI : PushColorManager.PUSH_GREEN_LO);
                 case 5:
-                    return cursorTrack.isAutoMonitor () ? this.isPush2 ? PushColorManager.PUSH2_COLOR_GREEN_HI : PushColorManager.PUSH1_COLOR_GREEN_HI : this.isPush2 ? PushColorManager.PUSH2_COLOR_GREEN_LO : PushColorManager.PUSH1_COLOR_GREEN_LO;
+                    return this.colorManager.getColorIndex (cursorTrack.isAutoMonitor () ? PushColorManager.PUSH_GREEN_HI : PushColorManager.PUSH_GREEN_LO);
                 case 6:
                     if (!this.hasPinning)
                         return this.isPush2 ? PushColorManager.PUSH2_COLOR_BLACK : PushColorManager.PUSH1_COLOR_BLACK;
-                    return cursorTrack.isPinned () ? this.isPush2 ? PushColorManager.PUSH2_COLOR_GREEN_HI : PushColorManager.PUSH1_COLOR_GREEN_HI : this.isPush2 ? PushColorManager.PUSH2_COLOR_GREEN_LO : PushColorManager.PUSH1_COLOR_GREEN_LO;
+                    return this.colorManager.getColorIndex (cursorTrack.isPinned () ? PushColorManager.PUSH_GREEN_HI : PushColorManager.PUSH_GREEN_LO);
                 default:
                 case 7:
                     return this.isPush2 ? PushColorManager.PUSH2_COLOR_GREEN_HI : PushColorManager.PUSH1_COLOR_GREEN_HI;

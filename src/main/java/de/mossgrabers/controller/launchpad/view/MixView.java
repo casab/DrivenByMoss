@@ -21,6 +21,8 @@ import de.mossgrabers.framework.daw.data.bank.ITrackBank;
 import de.mossgrabers.framework.featuregroup.AbstractView;
 import de.mossgrabers.framework.utils.ButtonEvent;
 
+import java.util.Optional;
+
 
 /**
  * A view for mixing with track select, mute, solo, rec arm, stop clip, volume and panorama.
@@ -77,16 +79,26 @@ public class MixView extends AbstractView<LaunchpadControlSurface, LaunchpadConf
                 // Panorama
                 padGrid.light (84 + i, isSelected ? LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_GREY_LO);
                 // Send 1
-                padGrid.light (76 + i, hasSends ? isSelected ? LaunchpadColorManager.LAUNCHPAD_COLOR_ORCHID_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_GREY_LO : LaunchpadColorManager.LAUNCHPAD_COLOR_BLACK);
+                final int send1ColorID;
+                if (hasSends)
+                    send1ColorID = isSelected ? LaunchpadColorManager.LAUNCHPAD_COLOR_ORCHID_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_GREY_LO;
+                else
+                    send1ColorID = LaunchpadColorManager.LAUNCHPAD_COLOR_BLACK;
+                padGrid.light (76 + i, send1ColorID);
                 // Send 2
-                padGrid.light (68 + i, hasSends ? isSelected ? LaunchpadColorManager.LAUNCHPAD_COLOR_LIME_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_GREY_LO : LaunchpadColorManager.LAUNCHPAD_COLOR_BLACK);
+                final int send2ColorID;
+                if (hasSends)
+                    send2ColorID = isSelected ? LaunchpadColorManager.LAUNCHPAD_COLOR_LIME_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_GREY_LO;
+                else
+                    send2ColorID = LaunchpadColorManager.LAUNCHPAD_COLOR_BLACK;
+                padGrid.light (68 + i, send2ColorID);
                 // Stop
                 padGrid.light (60 + i, this.surface.isPressed (ButtonID.get (ButtonID.PAD25, i)) ? LaunchpadColorManager.LAUNCHPAD_COLOR_RED : LaunchpadColorManager.LAUNCHPAD_COLOR_ROSE);
                 // Mute
                 padGrid.light (52 + i, track.isMute () ? LaunchpadColorManager.LAUNCHPAD_COLOR_GREY_LO : LaunchpadColorManager.LAUNCHPAD_COLOR_YELLOW_HI);
                 // Solo
                 padGrid.light (44 + i, track.isSolo () ? LaunchpadColorManager.LAUNCHPAD_COLOR_BLUE_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_GREY_MD);
-                // Rec Arm
+                // Record Arm
                 padGrid.light (36 + i, track.isRecArm () ? LaunchpadColorManager.LAUNCHPAD_COLOR_RED_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_GREY_LO);
             }
             else
@@ -182,27 +194,27 @@ public class MixView extends AbstractView<LaunchpadControlSurface, LaunchpadConf
         int color = 0;
         int value = 0;
 
-        final ITrack track = this.model.getCurrentTrackBank ().getSelectedItem ();
-        if (track != null)
+        final Optional<ITrack> track = this.model.getCurrentTrackBank ().getSelectedItem ();
+        if (track.isPresent ())
         {
             switch (this.faderMode)
             {
                 default:
                 case VOLUME:
-                    value = track.getVolume ();
+                    value = track.get ().getVolume ();
                     color = LaunchpadColorManager.LAUNCHPAD_COLOR_CYAN;
                     break;
                 case PAN:
-                    value = track.getPan ();
+                    value = track.get ().getPan ();
                     color = LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_HI;
                     break;
                 case SEND1:
-                    final ISend send1 = track.getSendBank ().getItem (0);
+                    final ISend send1 = track.get ().getSendBank ().getItem (0);
                     value = send1.doesExist () ? send1.getValue () : 0;
                     color = LaunchpadColorManager.LAUNCHPAD_COLOR_ORCHID_HI;
                     break;
                 case SEND2:
-                    final ISend send2 = track.getSendBank ().getItem (1);
+                    final ISend send2 = track.get ().getSendBank ().getItem (1);
                     value = send2.doesExist () ? send2.getValue () : 0;
                     color = LaunchpadColorManager.LAUNCHPAD_COLOR_LIME_HI;
                     break;
@@ -222,8 +234,8 @@ public class MixView extends AbstractView<LaunchpadControlSurface, LaunchpadConf
     {
         if (!ButtonID.isSceneButton (buttonID) || event != ButtonEvent.DOWN)
             return;
-        final ITrack track = this.model.getCurrentTrackBank ().getSelectedItem ();
-        if (track == null)
+        final Optional<ITrack> track = this.model.getCurrentTrackBank ().getSelectedItem ();
+        if (track.isEmpty ())
             return;
 
         final int index = buttonID.ordinal () - ButtonID.SCENE1.ordinal ();
@@ -235,21 +247,21 @@ public class MixView extends AbstractView<LaunchpadControlSurface, LaunchpadConf
     @Override
     public int getValue ()
     {
-        final ITrack track = this.model.getCurrentTrackBank ().getSelectedItem ();
-        if (track == null)
+        final Optional<ITrack> track = this.model.getCurrentTrackBank ().getSelectedItem ();
+        if (track.isEmpty ())
             return 0;
         switch (this.faderMode)
         {
             default:
             case VOLUME:
-                return track.getVolume ();
+                return track.get ().getVolume ();
             case PAN:
-                return track.getPan ();
+                return track.get ().getPan ();
             case SEND1:
-                final ISend send1 = track.getSendBank ().getItem (0);
+                final ISend send1 = track.get ().getSendBank ().getItem (0);
                 return send1.doesExist () ? send1.getValue () : 0;
             case SEND2:
-                final ISend send2 = track.getSendBank ().getItem (1);
+                final ISend send2 = track.get ().getSendBank ().getItem (1);
                 return send2.doesExist () ? send2.getValue () : 0;
         }
     }
@@ -259,25 +271,25 @@ public class MixView extends AbstractView<LaunchpadControlSurface, LaunchpadConf
     @Override
     public void setValue (final int value)
     {
-        final ITrack track = this.model.getCurrentTrackBank ().getSelectedItem ();
-        if (track == null)
+        final Optional<ITrack> track = this.model.getCurrentTrackBank ().getSelectedItem ();
+        if (track.isEmpty ())
             return;
         switch (this.faderMode)
         {
             default:
             case VOLUME:
-                track.getVolumeParameter ().setValueImmediatly (value);
+                track.get ().getVolumeParameter ().setValueImmediatly (value);
                 break;
             case PAN:
-                track.getPanParameter ().setValueImmediatly (value);
+                track.get ().getPanParameter ().setValueImmediatly (value);
                 break;
             case SEND1:
-                final ISend send1 = track.getSendBank ().getItem (0);
+                final ISend send1 = track.get ().getSendBank ().getItem (0);
                 if (send1.doesExist ())
                     send1.setValueImmediatly (value);
                 break;
             case SEND2:
-                final ISend send2 = track.getSendBank ().getItem (1);
+                final ISend send2 = track.get ().getSendBank ().getItem (1);
                 if (send2.doesExist ())
                     send2.setValueImmediatly (value);
                 break;

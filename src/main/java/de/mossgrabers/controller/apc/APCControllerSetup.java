@@ -86,6 +86,8 @@ import de.mossgrabers.framework.view.AbstractSequencerView;
 import de.mossgrabers.framework.view.TempoView;
 import de.mossgrabers.framework.view.Views;
 
+import java.util.Optional;
+
 
 /**
  * Support for the Akai APC40 mkI and APC40 mkII controllers.
@@ -147,7 +149,7 @@ public class APCControllerSetup extends AbstractControllerSetup<APCControlSurfac
         final IMidiAccess midiAccess = this.factory.createMidiAccess ();
         final IMidiOutput output = midiAccess.createOutput ();
         final IMidiInput input = midiAccess.createInput (this.isMkII ? "Akai APC40 mkII" : "Akai APC40",
-                "B040??" /* Sustainpedal */);
+                "B040??" /* Sustain pedal */);
         final APCControlSurface surface = new APCControlSurface (this.host, this.colorManager, this.configuration, output, input, this.isMkII);
         this.surfaces.add (surface);
     }
@@ -775,8 +777,8 @@ public class APCControllerSetup extends AbstractControllerSetup<APCControlSurfac
                 if (isShift)
                     return index == clipLength;
 
-                final ITrack selTrack = tb.getSelectedItem ();
-                final int selIndex = selTrack == null ? -1 : selTrack.getIndex ();
+                final Optional<ITrack> selTrack = tb.getSelectedItem ();
+                final int selIndex = selTrack.isEmpty () ? -1 : selTrack.get ().getIndex ();
 
                 // Handle user mode selection
                 if (surface.isMkII () && surface.isPressed (ButtonID.SEND2))

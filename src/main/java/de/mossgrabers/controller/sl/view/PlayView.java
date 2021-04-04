@@ -26,6 +26,7 @@ import de.mossgrabers.framework.view.AbstractSequencerView;
 import de.mossgrabers.framework.view.Views;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 
 /**
@@ -330,7 +331,7 @@ public class PlayView extends AbstractSequencerView<SLControlSurface, SLConfigur
      * 'Draw' the drum grid sequencer.
      *
      * @param buttonIDOrdinal The ordinal number of the button
-     * @return The colo for the step
+     * @return The color for the step
      */
     public int drawDrumGrid (final int buttonIDOrdinal)
     {
@@ -486,8 +487,8 @@ public class PlayView extends AbstractSequencerView<SLControlSurface, SLConfigur
      */
     private void updateNote (final int trackIndex, final int note, final int velocity)
     {
-        final ITrack sel = this.model.getCurrentTrackBank ().getSelectedItem ();
-        if (sel != null && sel.getIndex () == trackIndex)
+        final Optional<ITrack> sel = this.model.getCurrentTrackBank ().getSelectedItem ();
+        if (sel.isPresent () && sel.get ().getIndex () == trackIndex)
             this.pressedKeys[note] = velocity;
     }
 }

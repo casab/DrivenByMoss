@@ -12,9 +12,11 @@ import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.daw.data.bank.ITrackBank;
 import de.mossgrabers.framework.utils.ButtonEvent;
 
+import java.util.Optional;
+
 
 /**
- * A rec arm button command.
+ * A record arm button command.
  *
  * @param <S> The type of the control surface
  * @param <C> The type of the configuration
@@ -60,8 +62,13 @@ public class RecArmCommand<S extends IControlSurface<C>, C extends Configuration
         if (event != ButtonEvent.UP)
             return;
         final ITrackBank currentTrackBank = this.model.getCurrentTrackBank ();
-        final ITrack track = this.index == -1 ? currentTrackBank.getSelectedItem () : currentTrackBank.getItem (this.index);
-        if (track != null)
-            track.toggleRecArm ();
+        if (this.index == -1)
+        {
+            final Optional<ITrack> selectedItem = currentTrackBank.getSelectedItem ();
+            if (selectedItem.isPresent ())
+                selectedItem.get ().toggleRecArm ();
+        }
+        else
+            currentTrackBank.getItem (this.index).toggleRecArm ();
     }
 }

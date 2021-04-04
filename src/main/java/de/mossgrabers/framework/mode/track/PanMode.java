@@ -13,6 +13,7 @@ import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.parameterprovider.track.PanParameterProvider;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
 
@@ -45,7 +46,7 @@ public class PanMode<S extends IControlSurface<C>, C extends Configuration> exte
      *
      * @param surface The control surface
      * @param model The model
-     * @param isAbsolute If true the value change is happending with a setter otherwise relative
+     * @param isAbsolute If true the value change is happening with a setter otherwise relative
      *            change method is used
      * @param controls The IDs of the knobs or faders to control this mode
      */
@@ -60,7 +61,7 @@ public class PanMode<S extends IControlSurface<C>, C extends Configuration> exte
      *
      * @param surface The control surface
      * @param model The model
-     * @param isAbsolute If true the value change is happending with a setter otherwise relative
+     * @param isAbsolute If true the value change is happening with a setter otherwise relative
      *            change method is used
      * @param controls The IDs of the knobs or faders to control this mode
      * @param isAlternativeFunction Callback function to execute the secondary function, e.g. a
@@ -79,13 +80,14 @@ public class PanMode<S extends IControlSurface<C>, C extends Configuration> exte
     @Override
     public void onKnobValue (final int index, final int value)
     {
-        final ITrack track = this.getTrack (index);
-        if (track == null)
+        final Optional<ITrack> track = this.getTrack (index);
+        if (track.isEmpty ())
             return;
+        final ITrack t = track.get ();
         if (this.isAbsolute)
-            track.setPan (value);
+            t.setPan (value);
         else
-            track.changePan (value);
+            t.changePan (value);
     }
 
 
@@ -93,16 +95,20 @@ public class PanMode<S extends IControlSurface<C>, C extends Configuration> exte
     @Override
     public void onKnobTouch (final int index, final boolean isTouched)
     {
-        final ITrack track = this.getTrack (index);
-        if (!track.doesExist ())
+        final Optional<ITrack> track = this.getTrack (index);
+        if (track.isEmpty ())
+            return;
+
+        final ITrack t = track.get ();
+        if (!t.doesExist ())
             return;
 
         if (isTouched && this.surface.isDeletePressed ())
         {
             this.surface.setTriggerConsumed (ButtonID.DELETE);
-            track.resetPan ();
+            t.resetPan ();
         }
-        track.touchPan (isTouched);
+        t.touchPan (isTouched);
     }
 
 
@@ -110,7 +116,7 @@ public class PanMode<S extends IControlSurface<C>, C extends Configuration> exte
     @Override
     public int getKnobValue (final int index)
     {
-        final ITrack track = this.getTrack (index);
-        return track == null ? -1 : track.getPan ();
+        final Optional<ITrack> track = this.getTrack (index);
+        return track.isEmpty () ? -1 : track.get ().getPan ();
     }
 }

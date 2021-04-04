@@ -48,7 +48,7 @@ public class FirePadGrid extends BlinkingPadGrid
      * Constructor.
      *
      * @param colorManager The color manager for accessing specific colors to use
-     * @param output The midi output which can address the pad states
+     * @param output The MIDI output which can address the pad states
      */
     public FirePadGrid (final ColorManager colorManager, final IMidiOutput output)
     {
@@ -80,14 +80,6 @@ public class FirePadGrid extends BlinkingPadGrid
     /** {@inheritDoc} */
     @Override
     protected void updateController ()
-    {
-        final String update = this.buildLEDUpdate ();
-        if (update != null)
-            this.output.sendSysex (update);
-    }
-
-
-    private String buildLEDUpdate ()
     {
         final StringBuilder sb = new StringBuilder ();
 
@@ -135,13 +127,14 @@ public class FirePadGrid extends BlinkingPadGrid
 
         // No update necessary
         if (sb.length () == 0)
-            return null;
+            return;
 
         length *= 4;
         final StringBuilder msg = new StringBuilder ("F0 47 7F 43 65 ");
         msg.append (StringUtils.toHexStr (length / 128)).append (' ');
         msg.append (StringUtils.toHexStr (length % 128)).append (' ');
-        return msg.append (sb).append ("F7").toString ();
+
+        this.output.sendSysex (msg.append (sb).append ("F7").toString ());
     }
 
 

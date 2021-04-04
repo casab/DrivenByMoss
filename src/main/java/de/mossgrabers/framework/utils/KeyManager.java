@@ -13,6 +13,7 @@ import de.mossgrabers.framework.scale.Scales;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -98,8 +99,8 @@ public class KeyManager implements INoteObserver
     @Override
     public void call (final int trackIndex, final int note, final int velocity)
     {
-        final ITrack sel = this.model.getCurrentTrackBank ().getSelectedItem ();
-        if (sel != null && sel.getIndex () == trackIndex)
+        final Optional<ITrack> sel = this.model.getCurrentTrackBank ().getSelectedItem ();
+        if (sel.isPresent () && sel.get ().getIndex () == trackIndex)
             this.setAllKeysPressed (note, velocity);
     }
 
@@ -138,7 +139,7 @@ public class KeyManager implements INoteObserver
 
 
     /**
-     * Get the midi note from the grid.
+     * Get the MIDI note from the grid.
      *
      * @param note The note on the grid
      * @return The translated note depending on applied scales, etc.
@@ -155,7 +156,7 @@ public class KeyManager implements INoteObserver
     /**
      * Get the ID of the color to use for a pad with respect to the current scale settings.
      *
-     * @param pad The midi note of the pad
+     * @param pad The MIDI note of the pad
      * @return The color ID
      */
     public String getColor (final int pad)

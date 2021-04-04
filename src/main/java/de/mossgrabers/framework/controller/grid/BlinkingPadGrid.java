@@ -31,9 +31,9 @@ public abstract class BlinkingPadGrid extends PadGridImpl
      * Constructor.
      *
      * @param colorManager The color manager for accessing specific colors to use
-     * @param output The midi output which can address the pad states
+     * @param output The MIDI output which can address the pad states
      */
-    public BlinkingPadGrid (final ColorManager colorManager, final IMidiOutput output)
+    protected BlinkingPadGrid (final ColorManager colorManager, final IMidiOutput output)
     {
         super (colorManager, output);
     }
@@ -43,19 +43,19 @@ public abstract class BlinkingPadGrid extends PadGridImpl
      * Constructor.
      *
      * @param colorManager The color manager for accessing specific colors to use
-     * @param output The midi output which can address the pad states
+     * @param output The MIDI output which can address the pad states
      * @param rows The number of rows of the grid
      * @param cols The number of columns of the grid
      * @param startNote The start note of the grid
      */
-    public BlinkingPadGrid (final ColorManager colorManager, final IMidiOutput output, final int rows, final int cols, final int startNote)
+    protected BlinkingPadGrid (final ColorManager colorManager, final IMidiOutput output, final int rows, final int cols, final int startNote)
     {
         super (colorManager, output, rows, cols, startNote);
     }
 
 
     /**
-     * Flush the changed pad LEDs using sysex.
+     * Flush the changed pad LEDs using system exclusive.
      */
     public void flush ()
     {

@@ -23,11 +23,13 @@ import de.mossgrabers.framework.scale.Scales;
 import de.mossgrabers.framework.view.Views;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -48,7 +50,7 @@ public abstract class AbstractConfiguration implements Configuration
     public static final Integer      SCALES_LAYOUT                     = Integer.valueOf (3);
     /** ID for enabling VU meters setting. */
     public static final Integer      ENABLE_VU_METERS                  = Integer.valueOf (4);
-    /** ID for behaviour on stop setting. */
+    /** ID for behavior on stop setting. */
     public static final Integer      BEHAVIOUR_ON_STOP                 = Integer.valueOf (5);
     /** ID for flipping the session grid setting. */
     public static final Integer      FLIP_SESSION                      = Integer.valueOf (6);
@@ -191,8 +193,9 @@ public abstract class AbstractConfiguration implements Configuration
     protected static final ColorEx DEFAULT_COLOR_BACKGROUND_DARKER  = ColorEx.fromRGB (39, 39, 39);
     protected static final ColorEx DEFAULT_COLOR_BACKGROUND_LIGHTER = ColorEx.fromRGB (118, 118, 118);
 
-    /** The behaviour when the stop button is pressed. */
-    public enum BehaviourOnStop
+
+    /** The behavior when the stop button is pressed. */
+    public enum BehaviorOnStop
     {
         /** Keep the play cursor at the current position on stop. */
         MOVE_PLAY_CURSOR,
@@ -201,6 +204,7 @@ public abstract class AbstractConfiguration implements Configuration
         /** Only pause on stop. */
         PAUSE
     }
+
 
     private static final String [] AFTERTOUCH_CONVERSION_VALUES = new String [131];
     static
@@ -283,6 +287,7 @@ public abstract class AbstractConfiguration implements Configuration
         "On"
     };
 
+
     /** Different options for the record button. */
     public enum RecordFunction
     {
@@ -299,6 +304,7 @@ public abstract class AbstractConfiguration implements Configuration
         /** Toggle clip overdub. */
         TOGGLE_REC_ARM
     }
+
 
     private static final String []                    RECORD_OPTIONS              =
     {
@@ -345,7 +351,7 @@ public abstract class AbstractConfiguration implements Configuration
     private boolean                                   scaleInKey                  = true;
     private String                                    scaleLayout                 = "4th ^";
     private boolean                                   enableVUMeters              = false;
-    private BehaviourOnStop                           behaviourOnStop             = BehaviourOnStop.MOVE_PLAY_CURSOR;
+    private BehaviorOnStop                            behaviorOnStop              = BehaviorOnStop.MOVE_PLAY_CURSOR;
     protected boolean                                 flipSession                 = false;
     private boolean                                   selectClipOnLaunch          = true;
     private boolean                                   drawRecordStripe            = true;
@@ -381,7 +387,7 @@ public abstract class AbstractConfiguration implements Configuration
     private ArpeggiatorMode                           noteRepeatMode;
     private int                                       noteRepeatOctave            = 0;
     private int                                       midiEditChannel             = 0;
-    private final ArpeggiatorMode []                  arpeggiatorModes;
+    private final List<ArpeggiatorMode>               arpeggiatorModes;
 
     private boolean                                   includeMaster               = true;
     private boolean                                   excludeDeactivatedItems     = false;
@@ -393,6 +399,7 @@ public abstract class AbstractConfiguration implements Configuration
     private RecordFunction                            recordButtonFunction        = RecordFunction.RECORD_ARRANGER;
     private RecordFunction                            shiftedRecordButtonFunction = RecordFunction.NEW_CLIP;
 
+
     /**
      * Constructor.
      *
@@ -400,12 +407,12 @@ public abstract class AbstractConfiguration implements Configuration
      * @param valueChanger The value changer
      * @param arpeggiatorModes The available arpeggiator modes
      */
-    public AbstractConfiguration (final IHost host, final IValueChanger valueChanger, final ArpeggiatorMode [] arpeggiatorModes)
+    protected AbstractConfiguration (final IHost host, final IValueChanger valueChanger, final List<ArpeggiatorMode> arpeggiatorModes)
     {
         this.host = host;
         this.valueChanger = valueChanger;
         this.arpeggiatorModes = arpeggiatorModes;
-        this.noteRepeatMode = arpeggiatorModes == null ? null : arpeggiatorModes[0];
+        this.noteRepeatMode = arpeggiatorModes == null || arpeggiatorModes.isEmpty () ? null : arpeggiatorModes.get (0);
 
         for (int i = 0; i < this.userPageNames.length; i++)
             this.userPageNames[i] = "Page " + (i + 1);
@@ -614,9 +621,9 @@ public abstract class AbstractConfiguration implements Configuration
 
     /** {@inheritDoc} */
     @Override
-    public BehaviourOnStop getBehaviourOnStop ()
+    public BehaviorOnStop getBehaviourOnStop ()
     {
-        return this.behaviourOnStop;
+        return this.behaviorOnStop;
     }
 
 
@@ -890,7 +897,7 @@ public abstract class AbstractConfiguration implements Configuration
      */
     protected void activateScaleBaseSetting (final ISettingsUI settingsUI)
     {
-        this.scaleBaseSetting = settingsUI.getEnumSetting ("Base", CATEGORY_SCALES, Scales.BASES, Scales.BASES[0]);
+        this.scaleBaseSetting = settingsUI.getEnumSetting ("Base", CATEGORY_SCALES, Scales.BASES, Scales.BASES.get (0));
         this.scaleBaseSetting.addValueObserver (value -> {
             this.scaleBase = value;
             this.notifyObservers (SCALES_BASE);
@@ -981,7 +988,7 @@ public abstract class AbstractConfiguration implements Configuration
 
 
     /**
-     * Activate the behaviour on stop setting.
+     * Activate the behavior on stop setting.
      *
      * @param settingsUI The settings
      */
@@ -989,7 +996,7 @@ public abstract class AbstractConfiguration implements Configuration
     {
         final IEnumSetting behaviourOnStopSetting = settingsUI.getEnumSetting ("Behaviour on Stop", CATEGORY_TRANSPORT, BEHAVIOUR_ON_STOP_VALUES, BEHAVIOUR_ON_STOP_VALUES[0]);
         behaviourOnStopSetting.addValueObserver (value -> {
-            this.behaviourOnStop = BehaviourOnStop.values ()[lookupIndex (BEHAVIOUR_ON_STOP_VALUES, value)];
+            this.behaviorOnStop = BehaviorOnStop.values ()[lookupIndex (BEHAVIOUR_ON_STOP_VALUES, value)];
             this.notifyObservers (BEHAVIOUR_ON_STOP);
         });
 
@@ -1049,7 +1056,7 @@ public abstract class AbstractConfiguration implements Configuration
 
 
     /**
-     * Activate action for rec armed pad setting.
+     * Activate action for record armed pad setting.
      *
      * @param settingsUI The settings
      */
@@ -1146,7 +1153,7 @@ public abstract class AbstractConfiguration implements Configuration
 
 
     /**
-     * Activate the exclude deactovated tracks setting.
+     * Activate the exclude deactivated tracks setting.
      *
      * @param settingsUI The settings
      */
@@ -1349,9 +1356,9 @@ public abstract class AbstractConfiguration implements Configuration
 
         if (this.host.supports (Capability.NOTE_REPEAT_MODE))
         {
-            final String [] arpModeNames = new String [this.arpeggiatorModes.length];
-            for (int i = 0; i < this.arpeggiatorModes.length; i++)
-                arpModeNames[i] = this.arpeggiatorModes[i].getName ();
+            final String [] arpModeNames = new String [this.arpeggiatorModes.size ()];
+            for (int i = 0; i < this.arpeggiatorModes.size (); i++)
+                arpModeNames[i] = this.arpeggiatorModes.get (i).getName ();
 
             this.noteRepeatModeSetting = settingsUI.getEnumSetting ("Mode", CATEGORY_NOTEREPEAT, arpModeNames, arpModeNames[1]);
             this.noteRepeatModeSetting.addValueObserver (value -> {
@@ -1456,28 +1463,22 @@ public abstract class AbstractConfiguration implements Configuration
     protected void activateDeviceFavorites (final ISettingsUI settingsUI, final int numFavInstruments, final int numFavAudio, final int numFavEffects)
     {
         this.instrumentNames = getDeviceNames (this.host.getInstrumentMetadata ());
-        if (this.instrumentNames.length >= 0)
+        for (int i = 0; i < numFavInstruments; i++)
         {
-            for (int i = 0; i < numFavInstruments; i++)
-            {
-                final IEnumSetting favSetting = settingsUI.getEnumSetting ("Instrument " + (i + 1), CATEGORY_FAV_DEVICES, this.instrumentNames, this.instrumentNames[Math.min (this.instrumentNames.length - 1, i)]);
-                this.instrumentSettings.add (favSetting);
-            }
+            final IEnumSetting favSetting = settingsUI.getEnumSetting ("Instrument " + (i + 1), CATEGORY_FAV_DEVICES, this.instrumentNames, this.instrumentNames[Math.min (this.instrumentNames.length - 1, i)]);
+            this.instrumentSettings.add (favSetting);
         }
 
         this.effectNames = getDeviceNames (this.host.getAudioEffectMetadata ());
-        if (this.effectNames.length >= 0)
+        for (int i = 0; i < numFavAudio; i++)
         {
-            for (int i = 0; i < numFavAudio; i++)
-            {
-                final IEnumSetting favSetting = settingsUI.getEnumSetting ("Audio " + (i + 1), CATEGORY_FAV_DEVICES, this.effectNames, this.effectNames[Math.min (this.effectNames.length - 1, i)]);
-                this.audioSettings.add (favSetting);
-            }
-            for (int i = 0; i < numFavEffects; i++)
-            {
-                final IEnumSetting favSetting = settingsUI.getEnumSetting ("Effect " + (i + 1), CATEGORY_FAV_DEVICES, this.effectNames, this.effectNames[Math.min (this.effectNames.length - 1, i)]);
-                this.effectSettings.add (favSetting);
-            }
+            final IEnumSetting favSetting = settingsUI.getEnumSetting ("Audio " + (i + 1), CATEGORY_FAV_DEVICES, this.effectNames, this.effectNames[Math.min (this.effectNames.length - 1, i)]);
+            this.audioSettings.add (favSetting);
+        }
+        for (int i = 0; i < numFavEffects; i++)
+        {
+            final IEnumSetting favSetting = settingsUI.getEnumSetting ("Effect " + (i + 1), CATEGORY_FAV_DEVICES, this.effectNames, this.effectNames[Math.min (this.effectNames.length - 1, i)]);
+            this.effectSettings.add (favSetting);
         }
     }
 
@@ -1543,12 +1544,20 @@ public abstract class AbstractConfiguration implements Configuration
      */
     public static int lookupIndex (final String [] options, final String value)
     {
-        for (int i = 0; i < options.length; i++)
-        {
-            if (options[i].equals (value))
-                return i;
-        }
-        return 0;
+        return lookupIndex (Arrays.asList (options), value);
+    }
+
+
+    /**
+     * Lookup the index of the value in the given options array.
+     *
+     * @param options The options in which to search for the value
+     * @param value The value to search for
+     * @return The index or 0 if not found
+     */
+    public static int lookupIndex (final List<String> options, final String value)
+    {
+        return Math.max (0, options.indexOf (value));
     }
 
 
@@ -1568,12 +1577,7 @@ public abstract class AbstractConfiguration implements Configuration
     @Override
     public int lookupArpeggiatorModeIndex (final ArpeggiatorMode arpMode)
     {
-        for (int i = 0; i < this.arpeggiatorModes.length; i++)
-        {
-            if (this.arpeggiatorModes[i] == arpMode)
-                return i;
-        }
-        return 0;
+        return Math.max (0, this.arpeggiatorModes.indexOf (arpMode));
     }
 
 
@@ -1585,10 +1589,8 @@ public abstract class AbstractConfiguration implements Configuration
     public ArpeggiatorMode nextArpeggiatorMode ()
     {
         final ArpeggiatorMode arpMode = this.getNoteRepeatMode ();
-        int index = this.lookupArpeggiatorModeIndex (arpMode) + 1;
-        if (index >= this.arpeggiatorModes.length)
-            index = 0;
-        return this.arpeggiatorModes[index];
+        final int index = this.lookupArpeggiatorModeIndex (arpMode) + 1;
+        return this.arpeggiatorModes.get (index < this.arpeggiatorModes.size () ? index : 0);
     }
 
 
@@ -1600,16 +1602,14 @@ public abstract class AbstractConfiguration implements Configuration
     public ArpeggiatorMode prevArpeggiatorMode ()
     {
         final ArpeggiatorMode arpMode = this.getNoteRepeatMode ();
-        int index = this.lookupArpeggiatorModeIndex (arpMode) - 1;
-        if (index < 0)
-            index = this.arpeggiatorModes.length - 1;
-        return this.arpeggiatorModes[index];
+        final int index = this.lookupArpeggiatorModeIndex (arpMode) - 1;
+        return this.arpeggiatorModes.get (index < 0 ? this.arpeggiatorModes.size () - 1 : index);
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public ArpeggiatorMode [] getArpeggiatorModes ()
+    public List<ArpeggiatorMode> getArpeggiatorModes ()
     {
         return this.arpeggiatorModes;
     }
@@ -1714,14 +1714,14 @@ public abstract class AbstractConfiguration implements Configuration
      * @param index The index
      * @return The devices' metadata or null if none existing
      */
-    public IDeviceMetadata getInstrumentFavorite (final int index)
+    public Optional<IDeviceMetadata> getInstrumentFavorite (final int index)
     {
         if (index >= this.instrumentSettings.size ())
-            return null;
+            return Optional.empty ();
         final String sel = this.instrumentSettings.get (index).get ();
         final int lookupIndex = lookupIndex (this.instrumentNames, sel);
         final List<IDeviceMetadata> instrumentMetadata = this.host.getInstrumentMetadata ();
-        return lookupIndex >= instrumentMetadata.size () ? null : instrumentMetadata.get (lookupIndex);
+        return Optional.ofNullable (lookupIndex >= instrumentMetadata.size () ? null : instrumentMetadata.get (lookupIndex));
     }
 
 
@@ -1731,14 +1731,14 @@ public abstract class AbstractConfiguration implements Configuration
      * @param index The index
      * @return The devices' metadata or null if none existing
      */
-    public IDeviceMetadata getAudioFavorite (final int index)
+    public Optional<IDeviceMetadata> getAudioFavorite (final int index)
     {
         if (index >= this.audioSettings.size ())
-            return null;
+            return Optional.empty ();
         final String sel = this.audioSettings.get (index).get ();
         final int lookupIndex = lookupIndex (this.effectNames, sel);
         final List<IDeviceMetadata> effectMetadata = this.host.getAudioEffectMetadata ();
-        return lookupIndex >= effectMetadata.size () ? null : effectMetadata.get (lookupIndex);
+        return Optional.ofNullable (lookupIndex >= effectMetadata.size () ? null : effectMetadata.get (lookupIndex));
     }
 
 
@@ -1748,14 +1748,14 @@ public abstract class AbstractConfiguration implements Configuration
      * @param index The index
      * @return The devices' metadata or null if none existing
      */
-    public IDeviceMetadata getEffectFavorite (final int index)
+    public Optional<IDeviceMetadata> getEffectFavorite (final int index)
     {
         if (index >= this.effectSettings.size ())
-            return null;
+            return Optional.empty ();
         final String sel = this.effectSettings.get (index).get ();
         final int lookupIndex = lookupIndex (this.effectNames, sel);
         final List<IDeviceMetadata> effectMetadata = this.host.getAudioEffectMetadata ();
-        return lookupIndex >= effectMetadata.size () ? null : effectMetadata.get (lookupIndex);
+        return Optional.ofNullable (lookupIndex >= effectMetadata.size () ? null : effectMetadata.get (lookupIndex));
     }
 
 

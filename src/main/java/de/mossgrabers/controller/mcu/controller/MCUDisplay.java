@@ -37,7 +37,7 @@ public class MCUDisplay extends AbstractTextDisplay
      * cells (0-8).
      *
      * @param host The host
-     * @param output The midi output which addresses the display
+     * @param output The MIDI output which addresses the display
      * @param isFirst True if it is the first display, otherwise the second
      * @param isMCUExtender True if it is an original Mackie extender
      * @param hasMaster True if a 9th master cell should be added
@@ -137,6 +137,7 @@ public class MCUDisplay extends AbstractTextDisplay
             catch (final InterruptedException ex)
             {
                 this.host.error ("USB display send executor did not end in 10 seconds. Interrupted.", ex);
+                Thread.currentThread ().interrupt ();
             }
         }
     }

@@ -13,6 +13,8 @@ import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.constants.Capability;
 import de.mossgrabers.framework.daw.midi.ArpeggiatorMode;
 
+import java.util.List;
+
 
 /**
  * The configuration settings for Fire.
@@ -26,9 +28,6 @@ public class FireConfiguration extends AbstractConfiguration
     /** Setting for the pad color saturation. */
     public static final Integer PAD_SATURATION = Integer.valueOf (51);
 
-    private IIntegerSetting     padBrightnessSetting;
-    private IIntegerSetting     padSaturationSetting;
-
     private int                 padBrightness  = 100;
     private int                 padSaturation  = 100;
 
@@ -40,7 +39,7 @@ public class FireConfiguration extends AbstractConfiguration
      * @param valueChanger The value changer
      * @param arpeggiatorModes The available arpeggiator modes
      */
-    public FireConfiguration (final IHost host, final IValueChanger valueChanger, final ArpeggiatorMode [] arpeggiatorModes)
+    public FireConfiguration (final IHost host, final IValueChanger valueChanger, final List<ArpeggiatorMode> arpeggiatorModes)
     {
         super (host, valueChanger, arpeggiatorModes);
     }
@@ -107,15 +106,15 @@ public class FireConfiguration extends AbstractConfiguration
         ///////////////////////////
         // Hardware
 
-        this.padBrightnessSetting = globalSettings.getRangeSetting ("Pad Brightness", CATEGORY_HARDWARE_SETUP, 0, 100, 1, "%", 100);
-        this.padBrightnessSetting.addValueObserver (value -> {
+        final IIntegerSetting padBrightnessSetting = globalSettings.getRangeSetting ("Pad Brightness", CATEGORY_HARDWARE_SETUP, 0, 100, 1, "%", 100);
+        padBrightnessSetting.addValueObserver (value -> {
             this.padBrightness = value.intValue ();
             this.notifyObservers (PAD_BRIGHTNESS);
         });
         this.isSettingActive.add (PAD_BRIGHTNESS);
 
-        this.padSaturationSetting = globalSettings.getRangeSetting ("Pad Saturation", CATEGORY_HARDWARE_SETUP, 0, 100, 1, "%", 100);
-        this.padSaturationSetting.addValueObserver (value -> {
+        final IIntegerSetting padSaturationSetting = globalSettings.getRangeSetting ("Pad Saturation", CATEGORY_HARDWARE_SETUP, 0, 100, 1, "%", 100);
+        padSaturationSetting.addValueObserver (value -> {
             this.padSaturation = value.intValue ();
             this.notifyObservers (PAD_SATURATION);
         });

@@ -11,7 +11,7 @@ import com.bitwig.extension.controller.api.MidiOut;
 
 
 /**
- * A midi output
+ * A MIDI output
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
@@ -35,7 +35,7 @@ class MidiOutputImpl extends AbstractMidiOutputImpl
      * Constructor.
      *
      * @param host The host
-     * @param portNumber The number of the midi output port
+     * @param portNumber The number of the MIDI output port
      */
     public MidiOutputImpl (final ControllerHost host, final int portNumber)
     {

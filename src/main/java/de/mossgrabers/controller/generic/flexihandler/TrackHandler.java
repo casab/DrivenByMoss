@@ -7,17 +7,21 @@ package de.mossgrabers.controller.generic.flexihandler;
 import de.mossgrabers.controller.generic.GenericFlexiConfiguration;
 import de.mossgrabers.controller.generic.controller.FlexiCommand;
 import de.mossgrabers.controller.generic.controller.GenericFlexiControlSurface;
+import de.mossgrabers.controller.generic.flexihandler.utils.FlexiHandlerException;
+import de.mossgrabers.controller.generic.flexihandler.utils.MidiValue;
 import de.mossgrabers.framework.command.core.TriggerCommand;
 import de.mossgrabers.framework.command.trigger.track.ToggleTrackBanksCommand;
 import de.mossgrabers.framework.controller.valuechanger.IValueChanger;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.ICursorTrack;
+import de.mossgrabers.framework.daw.data.IParameter;
 import de.mossgrabers.framework.daw.data.ISend;
 import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.daw.data.bank.ISendBank;
 import de.mossgrabers.framework.daw.data.bank.ITrackBank;
-import de.mossgrabers.framework.daw.data.empty.EmptyTrack;
 import de.mossgrabers.framework.utils.ButtonEvent;
+
+import java.util.Optional;
 
 
 /**
@@ -562,7 +566,7 @@ public class TrackHandler extends AbstractHandler
 
     /** {@inheritDoc} */
     @Override
-    public void handle (final FlexiCommand command, final int knobMode, final int value)
+    public void handle (final FlexiCommand command, final int knobMode, final MidiValue value)
     {
         final ITrackBank trackBank = this.model.getCurrentTrackBank ();
         if (trackBank == null)
@@ -657,7 +661,7 @@ public class TrackHandler extends AbstractHandler
             case TRACK_7_SET_ACTIVE:
             case TRACK_8_SET_ACTIVE:
                 if (isButtonPressed)
-                    trackBank.getItem (command.ordinal () - FlexiCommand.TRACK_1_SET_ACTIVE.ordinal ()).setIsActivated (value > 0);
+                    trackBank.getItem (command.ordinal () - FlexiCommand.TRACK_1_SET_ACTIVE.ordinal ()).setIsActivated (value.isPositive ());
                 break;
             case TRACK_SELECTED_TOGGLE_ACTIVE:
                 if (isButtonPressed)
@@ -665,7 +669,7 @@ public class TrackHandler extends AbstractHandler
                 break;
             case TRACK_SELECTED_SET_ACTIVE:
                 if (isButtonPressed)
-                    cursorTrack.setIsActivated (value > 0);
+                    cursorTrack.setIsActivated (value.isPositive ());
                 break;
 
             // Track 1-8: Set Volume
@@ -722,7 +726,7 @@ public class TrackHandler extends AbstractHandler
             case TRACK_7_SET_MUTE:
             case TRACK_8_SET_MUTE:
                 if (isButtonPressed)
-                    trackBank.getItem (command.ordinal () - FlexiCommand.TRACK_1_SET_MUTE.ordinal ()).setMute (value > 0);
+                    trackBank.getItem (command.ordinal () - FlexiCommand.TRACK_1_SET_MUTE.ordinal ()).setMute (value.isPositive ());
                 break;
             // Track Selected: Toggle Mute
             case TRACK_SELECTED_TOGGLE_MUTE:
@@ -732,7 +736,7 @@ public class TrackHandler extends AbstractHandler
             // Track Selected: Set Mute
             case TRACK_SELECTED_SET_MUTE:
                 if (isButtonPressed)
-                    cursorTrack.setMute (value > 0);
+                    cursorTrack.setMute (value.isPositive ());
                 break;
 
             // Track 1-8: Toggle Solo
@@ -757,7 +761,7 @@ public class TrackHandler extends AbstractHandler
             case TRACK_7_SET_SOLO:
             case TRACK_8_SET_SOLO:
                 if (isButtonPressed)
-                    trackBank.getItem (command.ordinal () - FlexiCommand.TRACK_1_SET_SOLO.ordinal ()).setSolo (value > 0);
+                    trackBank.getItem (command.ordinal () - FlexiCommand.TRACK_1_SET_SOLO.ordinal ()).setSolo (value.isPositive ());
                 break;
             // Track Selected: Toggle Solo
             case TRACK_SELECTED_TOGGLE_SOLO:
@@ -767,7 +771,7 @@ public class TrackHandler extends AbstractHandler
             // Track Selected: Set Solo
             case TRACK_SELECTED_SET_SOLO:
                 if (isButtonPressed)
-                    cursorTrack.setSolo (value > 0);
+                    cursorTrack.setSolo (value.isPositive ());
                 break;
 
             // Track 1-8: Toggle Arm
@@ -792,7 +796,7 @@ public class TrackHandler extends AbstractHandler
             case TRACK_7_SET_ARM:
             case TRACK_8_SET_ARM:
                 if (isButtonPressed)
-                    trackBank.getItem (command.ordinal () - FlexiCommand.TRACK_1_SET_ARM.ordinal ()).setRecArm (value > 0);
+                    trackBank.getItem (command.ordinal () - FlexiCommand.TRACK_1_SET_ARM.ordinal ()).setRecArm (value.isPositive ());
                 break;
             // Track Selected: Toggle Arm
             case TRACK_SELECTED_TOGGLE_ARM:
@@ -802,7 +806,7 @@ public class TrackHandler extends AbstractHandler
             // Track Selected: Set Arm
             case TRACK_SELECTED_SET_ARM:
                 if (isButtonPressed)
-                    cursorTrack.setRecArm (value > 0);
+                    cursorTrack.setRecArm (value.isPositive ());
                 break;
 
             // Track 1-8: Toggle Monitor
@@ -827,7 +831,7 @@ public class TrackHandler extends AbstractHandler
             case TRACK_7_SET_MONITOR:
             case TRACK_8_SET_MONITOR:
                 if (isButtonPressed)
-                    trackBank.getItem (command.ordinal () - FlexiCommand.TRACK_1_SET_MONITOR.ordinal ()).setMonitor (value > 0);
+                    trackBank.getItem (command.ordinal () - FlexiCommand.TRACK_1_SET_MONITOR.ordinal ()).setMonitor (value.isPositive ());
                 break;
             // Track Selected: Toggle Monitor
             case TRACK_SELECTED_TOGGLE_MONITOR:
@@ -837,7 +841,7 @@ public class TrackHandler extends AbstractHandler
             // Track Selected: Set Monitor
             case TRACK_SELECTED_SET_MONITOR:
                 if (isButtonPressed)
-                    cursorTrack.setMonitor (value > 0);
+                    cursorTrack.setMonitor (value.isPositive ());
                 break;
 
             // Track 1: Toggle Auto Monitor
@@ -862,7 +866,7 @@ public class TrackHandler extends AbstractHandler
             case TRACK_7_SET_AUTO_MONITOR:
             case TRACK_8_SET_AUTO_MONITOR:
                 if (isButtonPressed)
-                    trackBank.getItem (command.ordinal () - FlexiCommand.TRACK_1_SET_AUTO_MONITOR.ordinal ()).setAutoMonitor (value > 0);
+                    trackBank.getItem (command.ordinal () - FlexiCommand.TRACK_1_SET_AUTO_MONITOR.ordinal ()).setAutoMonitor (value.isPositive ());
                 break;
             // Track Selected: Toggle Auto Monitor
             case TRACK_SELECTED_TOGGLE_AUTO_MONITOR:
@@ -872,7 +876,7 @@ public class TrackHandler extends AbstractHandler
             // Track Selected: Set Auto Monitor
             case TRACK_SELECTED_SET_AUTO_MONITOR:
                 if (isButtonPressed)
-                    cursorTrack.setAutoMonitor (value > 0);
+                    cursorTrack.setAutoMonitor (value.isPositive ());
                 break;
 
             // Track Selected: Toggle Pinned
@@ -883,7 +887,7 @@ public class TrackHandler extends AbstractHandler
             // Track Selected: Set Pinned
             case TRACK_SELECTED_SET_PIN:
                 if (isButtonPressed)
-                    cursorTrack.setPinned (value > 0);
+                    cursorTrack.setPinned (value.isPositive ());
                 break;
 
             // Track 1-8: Set Send 1
@@ -1002,11 +1006,11 @@ public class TrackHandler extends AbstractHandler
 
     private int getSendValue (final int trackIndex, final int sendIndex)
     {
-        final ITrack track = this.getTrack (trackIndex);
-        if (track == null)
+        final Optional<ITrack> track = this.getTrack (trackIndex);
+        if (track.isEmpty ())
             return 0;
 
-        final ISendBank sendBank = track.getSendBank ();
+        final ISendBank sendBank = track.get ().getSendBank ();
         if (sendIndex >= sendBank.getPageSize ())
             return 0;
 
@@ -1018,42 +1022,53 @@ public class TrackHandler extends AbstractHandler
     }
 
 
-    private ITrack getTrack (final int trackIndex)
+    private Optional<ITrack> getTrack (final int trackIndex)
     {
         final ITrackBank tb = this.model.getCurrentTrackBank ();
         if (tb == null)
-            return EmptyTrack.INSTANCE;
-        return trackIndex < 0 ? tb.getSelectedItem () : tb.getItem (trackIndex);
+            return Optional.empty ();
+        if (trackIndex < 0)
+            return tb.getSelectedItem ();
+        final ITrack item = tb.getItem (trackIndex);
+        return item.doesExist () ? Optional.of (item) : Optional.empty ();
     }
 
 
-    private void changeTrackVolume (final int knobMode, final int trackIndex, final int value)
+    private void changeTrackVolume (final int knobMode, final int trackIndex, final MidiValue value)
     {
-        final ITrack track = this.getTrack (trackIndex);
+        final Optional<ITrack> track = this.getTrack (trackIndex);
+        if (track.isEmpty ())
+            return;
+        final int val = value.getValue ();
+        final IParameter volumeParameter = track.get ().getVolumeParameter ();
         if (isAbsolute (knobMode))
-            track.setVolume (value);
+            volumeParameter.setValue (this.getAbsoluteValueChanger (value), val);
         else
-            track.getVolumeParameter ().changeValue (this.getRelativeValueChanger (knobMode), value);
+            volumeParameter.changeValue (this.getRelativeValueChanger (knobMode), val);
     }
 
 
-    private void changeTrackPanorama (final int knobMode, final int trackIndex, final int value)
+    private void changeTrackPanorama (final int knobMode, final int trackIndex, final MidiValue value)
     {
-        final ITrack track = this.getTrack (trackIndex);
+        final Optional<ITrack> track = this.getTrack (trackIndex);
+        if (track.isEmpty ())
+            return;
+        final int val = value.getValue ();
+        final IParameter panParameter = track.get ().getPanParameter ();
         if (isAbsolute (knobMode))
-            track.setPan (value);
+            panParameter.setValue (this.getAbsoluteValueChanger (value), val);
         else
-            track.getPanParameter ().changeValue (this.getRelativeValueChanger (knobMode), value);
+            panParameter.changeValue (this.getRelativeValueChanger (knobMode), val);
     }
 
 
-    private void changeSendVolume (final int trackIndex, final int sendIndex, final int knobMode, final int value)
+    private void changeSendVolume (final int trackIndex, final int sendIndex, final int knobMode, final MidiValue value)
     {
-        final ITrack track = this.getTrack (trackIndex);
-        if (track == null)
+        final Optional<ITrack> track = this.getTrack (trackIndex);
+        if (track.isEmpty ())
             return;
 
-        final ISendBank sendBank = track.getSendBank ();
+        final ISendBank sendBank = track.get ().getSendBank ();
         if (sendIndex >= sendBank.getPageSize ())
             return;
 
@@ -1061,14 +1076,15 @@ public class TrackHandler extends AbstractHandler
         if (send == null)
             return;
 
+        final int val = value.getValue ();
         if (isAbsolute (knobMode))
-            send.setValue (value);
+            send.setValue (this.getAbsoluteValueChanger (value), val);
         else
-            send.changeValue (this.getRelativeValueChanger (knobMode), value);
+            send.changeValue (this.getRelativeValueChanger (knobMode), val);
     }
 
 
-    private void scrollTrack (final int knobMode, final int value)
+    private void scrollTrack (final int knobMode, final MidiValue value)
     {
         if (isAbsolute (knobMode))
             return;
@@ -1086,8 +1102,8 @@ public class TrackHandler extends AbstractHandler
     private void scrollTrackLeft (final boolean switchBank)
     {
         final ITrackBank tb = this.model.getCurrentTrackBank ();
-        final ITrack sel = tb.getSelectedItem ();
-        final int index = sel == null ? 0 : sel.getIndex () - 1;
+        final Optional<ITrack> sel = tb.getSelectedItem ();
+        final int index = sel.isEmpty () ? 0 : sel.get ().getIndex () - 1;
         if (index == -1 || switchBank)
         {
             tb.selectPreviousPage ();
@@ -1100,8 +1116,8 @@ public class TrackHandler extends AbstractHandler
     private void scrollTrackRight (final boolean switchBank)
     {
         final ITrackBank tb = this.model.getCurrentTrackBank ();
-        final ITrack sel = tb.getSelectedItem ();
-        final int index = sel == null ? 0 : sel.getIndex () + 1;
+        final Optional<ITrack> sel = tb.getSelectedItem ();
+        final int index = sel.isEmpty () ? 0 : sel.get ().getIndex () + 1;
         if (index == 8 || switchBank)
         {
             tb.selectNextPage ();

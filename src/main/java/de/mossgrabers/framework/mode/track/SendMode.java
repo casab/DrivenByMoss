@@ -14,6 +14,7 @@ import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.parameterprovider.track.SendParameterProvider;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
 
@@ -52,7 +53,7 @@ public class SendMode<S extends IControlSurface<C>, C extends Configuration> ext
      * @param sendIndex The send index
      * @param surface The control surface
      * @param model The model
-     * @param isAbsolute If true the value change is happending with a setter otherwise relative
+     * @param isAbsolute If true the value change is happening with a setter otherwise relative
      *            change method is used
      * @param controls The IDs of the knobs or faders to control this mode
      */
@@ -68,7 +69,7 @@ public class SendMode<S extends IControlSurface<C>, C extends Configuration> ext
      * @param sendIndex The send index
      * @param surface The control surface
      * @param model The model
-     * @param isAbsolute If true the value change is happending with a setter otherwise relative
+     * @param isAbsolute If true the value change is happening with a setter otherwise relative
      *            change method is used
      * @param controls The IDs of the knobs or faders to control this mode
      * @param isAlternativeFunction Callback function to execute the secondary function, e.g. a
@@ -89,10 +90,10 @@ public class SendMode<S extends IControlSurface<C>, C extends Configuration> ext
     @Override
     public void onKnobValue (final int index, final int value)
     {
-        final ITrack track = this.getTrack (index);
-        if (track == null)
+        final Optional<ITrack> track = this.getTrack (index);
+        if (track.isEmpty ())
             return;
-        final ISend item = track.getSendBank ().getItem (this.sendIndex);
+        final ISend item = track.get ().getSendBank ().getItem (this.sendIndex);
         if (this.isAbsolute)
             item.setValue (value);
         else
@@ -104,10 +105,10 @@ public class SendMode<S extends IControlSurface<C>, C extends Configuration> ext
     @Override
     public void onKnobTouch (final int index, final boolean isTouched)
     {
-        final ITrack track = this.getTrack (index);
-        if (track == null)
+        final Optional<ITrack> track = this.getTrack (index);
+        if (track.isEmpty ())
             return;
-        final ISend item = track.getSendBank ().getItem (this.sendIndex);
+        final ISend item = track.get ().getSendBank ().getItem (this.sendIndex);
         if (!item.doesExist ())
             return;
 
@@ -124,7 +125,7 @@ public class SendMode<S extends IControlSurface<C>, C extends Configuration> ext
     @Override
     public int getKnobValue (final int index)
     {
-        final ITrack track = this.getTrack (index);
-        return track == null ? -1 : track.getSendBank ().getItem (this.sendIndex).getValue ();
+        final Optional<ITrack> track = this.getTrack (index);
+        return track.isEmpty () ? -1 : track.get ().getSendBank ().getItem (this.sendIndex).getValue ();
     }
 }

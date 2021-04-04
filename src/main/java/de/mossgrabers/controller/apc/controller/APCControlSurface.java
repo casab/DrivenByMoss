@@ -22,7 +22,7 @@ import java.util.Arrays;
 @SuppressWarnings("javadoc")
 public class APCControlSurface extends AbstractControlSurface<APCConfiguration>
 {
-    // Midi Notes
+    // MIDI Notes
     public static final int     APC_BUTTON_RECORD_ARM          = 0x30;
     public static final int     APC_BUTTON_SOLO                = 0x31;
     public static final int     APC_BUTTON_ACTIVATOR           = 0x32;
@@ -67,7 +67,7 @@ public class APCControlSurface extends AbstractControlSurface<APCConfiguration>
     public static final int     APC_BUTTON_SESSION             = 0x66;         // mkII
     public static final int     APC_BUTTON_BANK                = 0x67;         // mkII
 
-    // Midi CC
+    // MIDI CC
     public static final int     APC_KNOB_TRACK_LEVEL           = 0x07;
     public static final int     APC_KNOB_TEMPO                 = 0x0D;         // mkII
     public static final int     APC_KNOB_MASTER_LEVEL          = 0x0E;
@@ -125,8 +125,8 @@ public class APCControlSurface extends AbstractControlSurface<APCConfiguration>
      * @param host The host
      * @param colorManager The color manager
      * @param configuration The configuration
-     * @param output The midi output
-     * @param input The midi input
+     * @param output The MIDI output
+     * @param input The MIDI input
      * @param isMkII
      */
     public APCControlSurface (final IHost host, final ColorManager colorManager, final APCConfiguration configuration, final IMidiOutput output, final IMidiInput input, final boolean isMkII)

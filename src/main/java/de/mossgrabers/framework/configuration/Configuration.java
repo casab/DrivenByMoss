@@ -4,11 +4,13 @@
 
 package de.mossgrabers.framework.configuration;
 
-import de.mossgrabers.framework.configuration.AbstractConfiguration.BehaviourOnStop;
+import de.mossgrabers.framework.configuration.AbstractConfiguration.BehaviorOnStop;
 import de.mossgrabers.framework.configuration.AbstractConfiguration.RecordFunction;
 import de.mossgrabers.framework.daw.constants.Resolution;
 import de.mossgrabers.framework.daw.midi.ArpeggiatorMode;
 import de.mossgrabers.framework.observer.ISettingObserver;
+
+import java.util.List;
 
 
 /**
@@ -98,11 +100,11 @@ public interface Configuration
 
 
     /**
-     * Get the behaviour when stop is pressed.
+     * Get the behavior when stop is pressed.
      *
-     * @return THe behaviour
+     * @return The behavior
      */
-    BehaviourOnStop getBehaviourOnStop ();
+    BehaviorOnStop getBehaviourOnStop ();
 
 
     /**
@@ -219,9 +221,9 @@ public interface Configuration
 
 
     /**
-     * Get the action for rec armed pads.
+     * Get the action for record armed pads.
      *
-     * @return The action for rec armed pads (0-2).
+     * @return The action for record armed pads (0-2).
      */
     int getActionForRecArmedPad ();
 
@@ -282,9 +284,9 @@ public interface Configuration
 
 
     /**
-     * Get the functionality of the footswitch 2.
+     * Get the functionality of the foot-switch 2.
      *
-     * @return The functionality of the footswitch 2.
+     * @return The functionality of the foot-switch 2.
      */
     int getFootswitch2 ();
 
@@ -312,7 +314,7 @@ public interface Configuration
      *
      * @return The modes
      */
-    ArpeggiatorMode [] getArpeggiatorModes ();
+    List<ArpeggiatorMode> getArpeggiatorModes ();
 
 
     /**
@@ -421,7 +423,7 @@ public interface Configuration
     /**
      * Set the MIDI channel for editing.
      *
-     * @param midiChannel The midi channel, 0-15
+     * @param midiChannel The MIDI channel, 0-15
      */
     void setMidiEditChannel (int midiChannel);
 

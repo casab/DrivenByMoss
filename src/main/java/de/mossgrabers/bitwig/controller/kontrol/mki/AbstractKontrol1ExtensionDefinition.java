@@ -16,7 +16,7 @@ import com.bitwig.extension.controller.api.ControllerHost;
 
 
 /**
- * Definition class for Native Instruments Komplete Kontrol 1 Sxx controllers.
+ * Definition class for Native Instruments Komplete Kontrol 1 S-series controllers.
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
@@ -30,7 +30,7 @@ public abstract class AbstractKontrol1ExtensionDefinition extends AbstractContro
      *
      * @param modelIndex The index of the specific model
      */
-    public AbstractKontrol1ExtensionDefinition (final int modelIndex)
+    protected AbstractKontrol1ExtensionDefinition (final int modelIndex)
     {
         super (new Kontrol1ControllerDefinition (modelIndex));
         this.modelIndex = modelIndex;

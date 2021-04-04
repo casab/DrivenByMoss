@@ -14,7 +14,7 @@ import de.mossgrabers.framework.observer.IValueObserver;
 
 
 /**
- * Default data for an empty channmel.
+ * Default data for an empty channel.
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
@@ -366,7 +366,7 @@ public class EmptyChannel extends EmptyItem implements IChannel
 
     /** {@inheritDoc} */
     @Override
-    public void addDevice (IDeviceMetadata metadata)
+    public void addDevice (final IDeviceMetadata metadata)
     {
         // Intentionally empty
     }

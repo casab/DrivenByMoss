@@ -17,6 +17,8 @@ import de.mossgrabers.framework.daw.constants.Resolution;
 import de.mossgrabers.framework.daw.data.IDrumDevice;
 import de.mossgrabers.framework.utils.ButtonEvent;
 
+import java.util.Optional;
+
 
 /**
  * Abstract implementation for a drum sequencer with N lanes (sounds). The grid is split into rows /
@@ -43,7 +45,7 @@ public abstract class AbstractDrumLaneView<S extends IControlSurface<C>, C exten
      * @param clipCols The columns of the clip (of the clip page)
      * @param useDawColors True to use the drum machine pad colors for coloring the octaves
      */
-    public AbstractDrumLaneView (final String name, final S surface, final IModel model, final int lanes, final int clipCols, final boolean useDawColors)
+    protected AbstractDrumLaneView (final String name, final S surface, final IModel model, final int lanes, final int clipCols, final boolean useDawColors)
     {
         this (name, surface, model, lanes, 8, GRID_COLUMNS, clipCols, true, useDawColors);
     }
@@ -62,7 +64,7 @@ public abstract class AbstractDrumLaneView<S extends IControlSurface<C>, C exten
      * @param followSelection Follow the drum pad selection if true
      * @param useDawColors True to use the drum machine pad colors for coloring the octaves
      */
-    public AbstractDrumLaneView (final String name, final S surface, final IModel model, final int lanes, final int numRows, final int numColumns, final int clipCols, final boolean followSelection, final boolean useDawColors)
+    protected AbstractDrumLaneView (final String name, final S surface, final IModel model, final int lanes, final int numRows, final int numColumns, final int clipCols, final boolean followSelection, final boolean useDawColors)
     {
         // numSequencerLines is set to 1 since it is only used as an indicator to trigger the clip
         // creation
@@ -105,7 +107,7 @@ public abstract class AbstractDrumLaneView<S extends IControlSurface<C>, C exten
     /**
      * Handle button combinations on the note area of the sequencer.
      *
-     * @param clip The sequenced midi clip
+     * @param clip The sequenced MIDI clip
      * @param channel The MIDI channel of the note
      * @param row The row in the current page in the clip
      * @param note The note in the current page of the pad in the clip
@@ -179,7 +181,7 @@ public abstract class AbstractDrumLaneView<S extends IControlSurface<C>, C exten
         for (int sound = 0; sound < this.lanes; sound++)
         {
             final int noteRow = offsetY + sound;
-            final ColorEx drumPadColor = this.getDrumPadColor (this.primary, sound);
+            final Optional<ColorEx> drumPadColor = this.getDrumPadColor (this.primary, sound);
             for (int col = 0; col < this.clipCols; col++)
             {
                 final int isSet = clip.getStep (editMidiChannel, col, noteRow).getState ();

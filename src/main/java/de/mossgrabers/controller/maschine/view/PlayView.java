@@ -323,12 +323,12 @@ public class PlayView extends AbstractPlayView<MaschineControlSurface, MaschineC
 
             case 8:
                 this.scales.prevScaleOffset ();
-                display.notify (Scales.BASES[this.scales.getScaleOffset ()]);
+                display.notify (Scales.BASES.get (this.scales.getScaleOffset ()));
                 break;
 
             case 9:
                 this.scales.nextScaleOffset ();
-                display.notify (Scales.BASES[this.scales.getScaleOffset ()]);
+                display.notify (Scales.BASES.get (this.scales.getScaleOffset ()));
                 break;
 
             case 12:
@@ -390,7 +390,7 @@ public class PlayView extends AbstractPlayView<MaschineControlSurface, MaschineC
     /**
      * Handle button combinations in the sequencer area.
      *
-     * @param clip The sequenced midi clip
+     * @param clip The sequenced MIDI clip
      * @param channel The MIDI channel of the note
      * @param step The step in the current page in the clip
      * @param note The note in the current page of the pad in the clip
@@ -450,7 +450,7 @@ public class PlayView extends AbstractPlayView<MaschineControlSurface, MaschineC
     {
         this.updateNoteMapping ();
         this.configuration.setScale (this.scales.getScale ().getName ());
-        this.configuration.setScaleBase (Scales.BASES[this.scales.getScaleOffset ()]);
+        this.configuration.setScaleBase (Scales.BASES.get (this.scales.getScaleOffset ()));
         this.configuration.setScaleLayout (this.scales.getScaleLayout ().getName ());
     }
 }

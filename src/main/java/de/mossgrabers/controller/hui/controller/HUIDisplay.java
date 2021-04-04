@@ -32,7 +32,7 @@ public class HUIDisplay extends AbstractTextDisplay
      * (0-8).
      *
      * @param host The host
-     * @param output The midi output which addresses the display
+     * @param output The MIDI output which addresses the display
      */
     public HUIDisplay (final IHost host, final IMidiOutput output)
     {
@@ -94,6 +94,7 @@ public class HUIDisplay extends AbstractTextDisplay
         catch (final InterruptedException ex)
         {
             this.host.error ("HUI display send executor did not end in 10 seconds. Interrupted.", ex);
+            Thread.currentThread ().interrupt ();
         }
     }
 }

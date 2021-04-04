@@ -55,9 +55,11 @@ import java.util.function.Supplier;
  */
 public abstract class AbstractControlSurface<C extends Configuration> implements IControlSurface<C>
 {
-    protected static final int                      BUTTON_STATE_INTERVAL    = 400;
-    protected static final int                      NUM_NOTES                = 128;
-    protected static final int                      NUM_INFOS                = 256;
+    private static final String                     SHOULD_BE_HANDLED_IN_FRAMEWORK = " should be handled in framework...";
+
+    protected static final int                      BUTTON_STATE_INTERVAL          = 400;
+    protected static final int                      NUM_NOTES                      = 128;
+    protected static final int                      NUM_INFOS                      = 256;
 
     protected final IHost                           host;
     protected final IHwSurfaceFactory               surfaceFactory;
@@ -68,16 +70,16 @@ public abstract class AbstractControlSurface<C extends Configuration> implements
 
     protected final int                             surfaceID;
 
-    protected final ViewManager                     viewManager              = new ViewManager ();
-    protected final ModeManager                     modeManager              = new ModeManager ();
+    protected final ViewManager                     viewManager                    = new ViewManager ();
+    protected final ModeManager                     modeManager                    = new ModeManager ();
 
-    protected int                                   defaultMidiChannel       = 0;
+    protected int                                   defaultMidiChannel             = 0;
 
-    private Map<ContinuousID, IHwContinuousControl> continuous               = new EnumMap<> (ContinuousID.class);
-    private Map<ButtonID, IHwButton>                buttons                  = new EnumMap<> (ButtonID.class);
-    private Map<OutputID, IHwLight>                 lights                   = new EnumMap<> (OutputID.class);
-    protected List<ITextDisplay>                    textDisplays             = new ArrayList<> (1);
-    protected List<IGraphicDisplay>                 graphicsDisplays         = new ArrayList<> (1);
+    private Map<ContinuousID, IHwContinuousControl> continuous                     = new EnumMap<> (ContinuousID.class);
+    private Map<ButtonID, IHwButton>                buttons                        = new EnumMap<> (ButtonID.class);
+    private Map<OutputID, IHwLight>                 lights                         = new EnumMap<> (OutputID.class);
+    protected List<ITextDisplay>                    textDisplays                   = new ArrayList<> (1);
+    protected List<IGraphicDisplay>                 graphicsDisplays               = new ArrayList<> (1);
 
     protected final IPadGrid                        padGrid;
     protected ILightGuide                           lightGuide;
@@ -87,11 +89,11 @@ public abstract class AbstractControlSurface<C extends Configuration> implements
     private final DummyDisplay                      dummyDisplay;
     private IHwPianoKeyboard                        pianoKeyboard;
 
-    private final Object                            updateCounterLock        = new Object ();
-    private int                                     updateCounter            = 0;
+    private final Object                            updateCounterLock              = new Object ();
+    private int                                     updateCounter                  = 0;
 
-    private boolean                                 knobSensitivityIsSlow    = false;
-    private final List<ISensitivityCallback>        knobSensitivityObservers = new ArrayList<> ();
+    private boolean                                 knobSensitivityIsSlow          = false;
+    private final List<ISensitivityCallback>        knobSensitivityObservers       = new ArrayList<> ();
 
 
     /**
@@ -100,13 +102,13 @@ public abstract class AbstractControlSurface<C extends Configuration> implements
      * @param host The host
      * @param configuration The configuration
      * @param colorManager
-     * @param output The midi output
-     * @param input The midi input
+     * @param output The MIDI output
+     * @param input The MIDI input
      * @param padGrid The pads if any, may be null
      * @param width The physical width of the controller device in mm
      * @param height The physical height of the controller device in mm
      */
-    public AbstractControlSurface (final IHost host, final C configuration, final ColorManager colorManager, final IMidiOutput output, final IMidiInput input, final IPadGrid padGrid, final double width, final double height)
+    protected AbstractControlSurface (final IHost host, final C configuration, final ColorManager colorManager, final IMidiOutput output, final IMidiInput input, final IPadGrid padGrid, final double width, final double height)
     {
         this (0, host, configuration, colorManager, output, input, padGrid, width, height);
     }
@@ -119,13 +121,13 @@ public abstract class AbstractControlSurface<C extends Configuration> implements
      * @param host The host
      * @param configuration The configuration
      * @param colorManager
-     * @param output The midi output
-     * @param input The midi input
+     * @param output The MIDI output
+     * @param input The MIDI input
      * @param padGrid The pads if any, may be null
      * @param width The physical width of the controller device in mm
      * @param height The physical height of the controller device in mm
      */
-    public AbstractControlSurface (final int surfaceID, final IHost host, final C configuration, final ColorManager colorManager, final IMidiOutput output, final IMidiInput input, final IPadGrid padGrid, final double width, final double height)
+    protected AbstractControlSurface (final int surfaceID, final IHost host, final C configuration, final ColorManager colorManager, final IMidiOutput output, final IMidiInput input, final IPadGrid padGrid, final double width, final double height)
     {
         this (surfaceID, host, configuration, colorManager, output, input, padGrid, null, width, height);
     }
@@ -138,14 +140,14 @@ public abstract class AbstractControlSurface<C extends Configuration> implements
      * @param host The host
      * @param configuration The configuration
      * @param colorManager
-     * @param output The midi output
-     * @param input The midi input
+     * @param output The MIDI output
+     * @param input The MIDI input
      * @param padGrid The pads if any, may be null
      * @param lightGuide The light guide
      * @param width The physical width of the controller device in mm
      * @param height The physical height of the controller device in mm
      */
-    public AbstractControlSurface (final int surfaceID, final IHost host, final C configuration, final ColorManager colorManager, final IMidiOutput output, final IMidiInput input, final IPadGrid padGrid, final ILightGuide lightGuide, final double width, final double height)
+    protected AbstractControlSurface (final int surfaceID, final IHost host, final C configuration, final ColorManager colorManager, final IMidiOutput output, final IMidiInput input, final IPadGrid padGrid, final ILightGuide lightGuide, final double width, final double height)
     {
         this.surfaceID = surfaceID;
 
@@ -762,11 +764,11 @@ public abstract class AbstractControlSurface<C extends Configuration> implements
 
 
     /**
-     * Handle received midi data.
+     * Handle received MIDI data.
      *
-     * @param status The midi status byte
-     * @param data1 The midi data byte 1
-     * @param data2 The midi data byte 2
+     * @param status The MIDI status byte
+     * @param data1 The MIDI data byte 1
+     * @param data2 The MIDI data byte 2
      */
     protected void handleMidi (final int status, final int data1, final int data2)
     {
@@ -811,7 +813,7 @@ public abstract class AbstractControlSurface<C extends Configuration> implements
                 break;
 
             default:
-                this.host.error ("Unhandled midi status: " + status);
+                this.host.error ("Unhandled MIDI status: " + status);
                 break;
         }
     }
@@ -826,7 +828,7 @@ public abstract class AbstractControlSurface<C extends Configuration> implements
     protected void handleCC (final int data1, final int data2)
     {
         // Handled by bind framework
-        this.host.error ("CC " + data1 + " should be handled in framework...");
+        this.host.error ("CC " + data1 + SHOULD_BE_HANDLED_IN_FRAMEWORK);
     }
 
 
@@ -851,7 +853,7 @@ public abstract class AbstractControlSurface<C extends Configuration> implements
     protected void handleNoteOff (final int data1, final int data2)
     {
         // Handled by bind framework
-        this.host.error ("Midi Note off " + data1 + " should be handled in framework...");
+        this.host.error ("Midi Note off " + data1 + SHOULD_BE_HANDLED_IN_FRAMEWORK);
     }
 
 
@@ -864,7 +866,7 @@ public abstract class AbstractControlSurface<C extends Configuration> implements
     protected void handleNoteOn (final int data1, final int data2)
     {
         // Handled by bind framework
-        this.host.error ("Midi Note on " + data1 + " should be handled in framework...");
+        this.host.error ("Midi Note on " + data1 + SHOULD_BE_HANDLED_IN_FRAMEWORK);
     }
 
 
@@ -984,10 +986,10 @@ public abstract class AbstractControlSurface<C extends Configuration> implements
 
 
     /**
-     * Handle a midi note which belongs to the grid.
+     * Handle a MIDI note which belongs to the grid.
      *
      * @param event The button event
-     * @param note The midi note (already transformed to the grid)
+     * @param note The MIDI note (already transformed to the grid)
      * @param velocity The velocity of the note
      */
     protected void handleGridNote (final ButtonEvent event, final int note, final int velocity)

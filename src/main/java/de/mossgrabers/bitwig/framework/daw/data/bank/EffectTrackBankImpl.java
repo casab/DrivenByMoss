@@ -42,7 +42,9 @@ public class EffectTrackBankImpl extends AbstractTrackBankImpl
     {
         super (host, valueChanger, effectTrackBank, cursorTrack, rootGroup, application, numFxTracks, numScenes, 0);
 
-        this.bank.followCursorTrack (cursorTrack);
+        if (this.bank.isPresent ())
+            this.bank.get ().followCursorTrack (cursorTrack);
+
         this.audioInstrumentTrackBank = audioInstrumentTrackBank;
     }
 
@@ -93,6 +95,6 @@ public class EffectTrackBankImpl extends AbstractTrackBankImpl
     @Override
     public void addNoteObserver (final INoteObserver observer)
     {
-        // No notes on fx tracks
+        // No notes on FX tracks
     }
 }

@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class KontrolProtocolControlSurface extends AbstractControlSurface<KontrolProtocolConfiguration>
 {
-    /** Command to initialise the protocol handshake (and acknowledge). */
+    /** Command to initialize the protocol handshake (and acknowledge). */
     public static final int CMD_HELLO                            = 0x01;
     /** Command to stop the protocol. */
     public static final int CMD_GOODBYE                          = 0x02;
@@ -133,8 +133,8 @@ public class KontrolProtocolControlSurface extends AbstractControlSurface<Kontro
      * @param host The host
      * @param colorManager The color manager
      * @param configuration The configuration
-     * @param output The midi output
-     * @param input The midi input
+     * @param output The MIDI output
+     * @param input The MIDI input
      * @param version The version number of the NIHIA protocol to request
      */
     public KontrolProtocolControlSurface (final IHost host, final ColorManager colorManager, final KontrolProtocolConfiguration configuration, final IMidiOutput output, final IMidiInput input, final int version)
@@ -318,7 +318,7 @@ public class KontrolProtocolControlSurface extends AbstractControlSurface<Kontro
 
 
     /**
-     * Caches the values of the sysex values.
+     * Caches the values of the system exclusive values.
      */
     private static class ValueCache
     {

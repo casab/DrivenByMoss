@@ -8,10 +8,12 @@ import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.configuration.Configuration;
 import de.mossgrabers.framework.controller.IControlSurface;
 import de.mossgrabers.framework.daw.IModel;
-import de.mossgrabers.framework.daw.data.IChannel;
 import de.mossgrabers.framework.daw.data.ICursorDevice;
+import de.mossgrabers.framework.daw.data.ILayer;
 import de.mossgrabers.framework.daw.data.bank.IChannelBank;
 import de.mossgrabers.framework.utils.ButtonEvent;
+
+import java.util.Optional;
 
 
 /**
@@ -44,9 +46,9 @@ public class DeviceLayerRightCommand<S extends IControlSurface<C>, C extends Con
             return;
 
         final ICursorDevice cd = this.model.getCursorDevice ();
-        final IChannelBank<?> bank = cd.getLayerOrDrumPadBank ();
-        final IChannel sel = bank.getSelectedItem ();
-        if (!cd.hasLayers () || sel == null)
+        final IChannelBank<ILayer> bank = cd.getLayerBank ();
+        final Optional<ILayer> sel = bank.getSelectedItem ();
+        if (!cd.hasLayers () || sel.isEmpty ())
             cd.selectNext ();
         else
             bank.selectNextItem ();
@@ -65,12 +67,12 @@ public class DeviceLayerRightCommand<S extends IControlSurface<C>, C extends Con
         if (!cd.hasLayers ())
             return;
 
-        final IChannelBank<?> bank = cd.getLayerOrDrumPadBank ();
-        final IChannel layer = bank.getSelectedItem ();
-        if (layer == null)
+        final IChannelBank<ILayer> bank = cd.getLayerBank ();
+        final Optional<ILayer> layer = bank.getSelectedItem ();
+        if (layer.isEmpty ())
             bank.getItem (0).select ();
         else
-            layer.enter ();
+            layer.get ().enter ();
     }
 
 
@@ -85,8 +87,8 @@ public class DeviceLayerRightCommand<S extends IControlSurface<C>, C extends Con
             return true;
 
         final ICursorDevice cd = this.model.getCursorDevice ();
-        final IChannelBank<?> bank = cd.getLayerOrDrumPadBank ();
-        final IChannel layer = bank.getSelectedItem ();
-        return cd.hasLayers () && layer != null ? bank.canScrollForwards () : cd.canSelectNextFX ();
+        final IChannelBank<ILayer> bank = cd.getLayerBank ();
+        final Optional<ILayer> layer = bank.getSelectedItem ();
+        return cd.hasLayers () && layer.isPresent () ? bank.canScrollForwards () : cd.canSelectNextFX ();
     }
 }

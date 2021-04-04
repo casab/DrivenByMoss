@@ -21,6 +21,8 @@ import de.mossgrabers.framework.daw.data.bank.ITrackBank;
 import de.mossgrabers.framework.observer.IValueObserver;
 import de.mossgrabers.framework.scale.Scales;
 
+import java.util.Optional;
+
 
 /**
  * The interface to all data and access to the DAW.
@@ -273,7 +275,7 @@ public interface IModel
      *
      * @return The slot or null
      */
-    ISlot getSelectedSlot ();
+    Optional<ISlot> getSelectedSlot ();
 
 
     /**
@@ -296,12 +298,12 @@ public interface IModel
 
 
     /**
-     * Create a new note clip of the given length and acivates and starts overdubbing.
+     * Create a new note clip of the given length and activates and starts over-dub.
      *
      * @param track The track which contains the slot
      * @param slot The slot in which to create a clip
      * @param lengthInBeats The length of the new clip
-     * @param overdub If true, overdub is enabled
+     * @param overdub If true, over-dub is enabled
      */
     void createNoteClip (ITrack track, ISlot slot, int lengthInBeats, boolean overdub);
 

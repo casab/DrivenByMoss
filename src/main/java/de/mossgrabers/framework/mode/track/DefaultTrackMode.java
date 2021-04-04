@@ -13,6 +13,7 @@ import de.mossgrabers.framework.daw.data.bank.ITrackBank;
 import de.mossgrabers.framework.featuregroup.AbstractMode;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
 
@@ -32,7 +33,7 @@ public class DefaultTrackMode<S extends IControlSurface<C>, C extends Configurat
      * @param name The name of the mode
      * @param surface The control surface
      * @param model The model
-     * @param isAbsolute If true the value change is happending with a setter otherwise relative
+     * @param isAbsolute If true the value change is happening with a setter otherwise relative
      *            change method is used
      */
     public DefaultTrackMode (final String name, final S surface, final IModel model, final boolean isAbsolute)
@@ -47,7 +48,7 @@ public class DefaultTrackMode<S extends IControlSurface<C>, C extends Configurat
      * @param name The name of the mode
      * @param surface The control surface
      * @param model The model
-     * @param isAbsolute If true the value change is happending with a setter otherwise relative
+     * @param isAbsolute If true the value change is happening with a setter otherwise relative
      *            change method is used
      * @param controls The IDs of the knobs or faders to control this mode
      */
@@ -63,7 +64,7 @@ public class DefaultTrackMode<S extends IControlSurface<C>, C extends Configurat
      * @param name The name of the mode
      * @param surface The control surface
      * @param model The model
-     * @param isAbsolute If true the value change is happending with a setter otherwise relative
+     * @param isAbsolute If true the value change is happening with a setter otherwise relative
      *            change method is used
      * @param controls The IDs of the knobs or faders to control this mode
      * @param isAlternativeFunction Callback function to execute the secondary function, e.g. a
@@ -79,12 +80,13 @@ public class DefaultTrackMode<S extends IControlSurface<C>, C extends Configurat
 
     /** {@inheritDoc} */
     @Override
-    public String getSelectedItemName ()
+    public Optional<String> getSelectedItemName ()
     {
-        final ITrack selectedItem = this.model.getCurrentTrackBank ().getSelectedItem ();
-        if (selectedItem == null || !selectedItem.doesExist ())
-            return null;
-        return selectedItem.getPosition () + 1 + ": " + selectedItem.getName ();
+        final Optional<ITrack> selectedItem = this.model.getCurrentTrackBank ().getSelectedItem ();
+        if (selectedItem.isEmpty ())
+            return Optional.empty ();
+        final ITrack track = selectedItem.get ();
+        return track.doesExist () ? Optional.of (track.getPosition () + 1 + ": " + track.getName ()) : Optional.empty ();
     }
 
 
@@ -94,9 +96,9 @@ public class DefaultTrackMode<S extends IControlSurface<C>, C extends Configurat
      * @param index The index of the track. If set to -1 the selected track is used.
      * @return The selected track
      */
-    protected ITrack getTrack (final int index)
+    protected Optional<ITrack> getTrack (final int index)
     {
         final ITrackBank tb = this.model.getCurrentTrackBank ();
-        return index < 0 ? tb.getSelectedItem () : tb.getItem (index);
+        return index < 0 ? tb.getSelectedItem () : Optional.of (tb.getItem (index));
     }
 }

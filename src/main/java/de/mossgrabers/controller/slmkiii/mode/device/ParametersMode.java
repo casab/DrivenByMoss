@@ -25,6 +25,8 @@ import de.mossgrabers.framework.parameterprovider.special.ResetParameterProvider
 import de.mossgrabers.framework.utils.ButtonEvent;
 import de.mossgrabers.framework.utils.StringUtils;
 
+import java.util.Optional;
+
 
 /**
  * Mode for editing device remote control parameters.
@@ -113,7 +115,7 @@ public class ParametersMode extends AbstractParametersMode<IItem>
         if (!cd.doesExist ())
             return;
 
-        // Normal behaviour - parameters
+        // Normal behavior - parameters
         if (!this.showDevices)
         {
             final IParameterPageBank parameterPageBank = cd.getParameterPageBank ();
@@ -140,7 +142,7 @@ public class ParametersMode extends AbstractParametersMode<IItem>
             return;
         }
 
-        // Normal behaviour - devices
+        // Normal behavior - devices
         if (cd.getIndex () == index)
             this.setShowDevices (!this.isShowDevices ());
         else
@@ -213,7 +215,7 @@ public class ParametersMode extends AbstractParametersMode<IItem>
         if (!cd.doesExist ())
             return 0;
 
-        // Colors normal behaviour
+        // Colors normal behavior
         final int index = buttonID.ordinal () - ButtonID.ROW1_1.ordinal ();
         if (this.showDevices)
         {
@@ -290,8 +292,8 @@ public class ParametersMode extends AbstractParametersMode<IItem>
         else
         {
             final IParameterPageBank parameterPageBank = cd.getParameterPageBank ();
-            final String selectedPage = parameterPageBank.getSelectedItem ();
-            d.setCell (0, 8, cd.getName (9)).setCell (1, 8, selectedPage);
+            final Optional<String> selectedPage = parameterPageBank.getSelectedItem ();
+            d.setCell (0, 8, cd.getName (9)).setCell (1, 8, selectedPage.isPresent () ? selectedPage.get () : "");
 
             // Row 1 & 2
             for (int i = 0; i < 8; i++)

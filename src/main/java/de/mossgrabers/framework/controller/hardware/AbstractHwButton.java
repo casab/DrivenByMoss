@@ -38,7 +38,7 @@ public abstract class AbstractHwButton extends AbstractHwInputControl implements
      * @param host The host
      * @param label The label of the button
      */
-    public AbstractHwButton (final IHost host, final String label)
+    protected AbstractHwButton (final IHost host, final String label)
     {
         super (host, label);
     }
@@ -143,6 +143,17 @@ public abstract class AbstractHwButton extends AbstractHwInputControl implements
 
     /** {@inheritDoc} */
     @Override
+    public void removeEventHandler (final ButtonEvent event, final ButtonEventHandler eventHandler)
+    {
+        if (event == ButtonEvent.DOWN)
+            this.downEventHandlers.remove (eventHandler);
+        else if (event == ButtonEvent.UP)
+            this.upEventHandlers.remove (eventHandler);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void setConsumed ()
     {
         this.isConsumed = true;
@@ -154,6 +165,15 @@ public abstract class AbstractHwButton extends AbstractHwInputControl implements
     public boolean isConsumed ()
     {
         return this.isConsumed;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void trigger ()
+    {
+        this.trigger (ButtonEvent.DOWN);
+        this.trigger (ButtonEvent.UP);
     }
 
 

@@ -284,8 +284,8 @@ public class HUIControlSurface extends AbstractControlSurface<HUIConfiguration>
      * @param host The host
      * @param colorManager The color manager
      * @param configuration The configuration
-     * @param output The midi output
-     * @param input The midi input
+     * @param output The MIDI output
+     * @param input The MIDI input
      * @param model The model
      */
     public HUIControlSurface (final IHost host, final ColorManager colorManager, final HUIConfiguration configuration, final IMidiOutput output, final IMidiInput input, final IModel model)
@@ -355,7 +355,7 @@ public class HUIControlSurface extends AbstractControlSurface<HUIConfiguration>
 
         switch (data1)
         {
-            // Move fader hi-byte
+            // Move fader high-byte
             case 0x00:
             case 0x01:
             case 0x02:
@@ -377,7 +377,7 @@ public class HUIControlSurface extends AbstractControlSurface<HUIConfiguration>
                 this.zone = data2;
                 break;
 
-            // Move fader lo-byte
+            // Move fader low-byte
             case 0x20:
             case 0x21:
             case 0x22:
@@ -421,7 +421,7 @@ public class HUIControlSurface extends AbstractControlSurface<HUIConfiguration>
                 break;
 
             default:
-                this.host.println ("Unhandled midi CC: " + data1);
+                this.host.println ("Unhandled MIDI CC: " + data1);
                 break;
         }
     }

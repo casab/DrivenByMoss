@@ -20,6 +20,7 @@ import de.mossgrabers.framework.mode.Modes;
 import de.mossgrabers.framework.view.Views;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -30,7 +31,7 @@ import java.util.Set;
  */
 public class PushConfiguration extends AbstractConfiguration implements IGraphicsConfiguration
 {
-    /** Settings for different Mute and Solo behaviour. */
+    /** Settings for different Mute and Solo behavior. */
     public enum TrackState
     {
         /** Use Mute, Solo for muting/soloing the current track. */
@@ -44,7 +45,7 @@ public class PushConfiguration extends AbstractConfiguration implements IGraphic
 
     /** Setting for the ribbon mode. */
     public static final Integer     RIBBON_MODE                     = Integer.valueOf (50);
-    /** Setting for the ribbon mode midi CC. */
+    /** Setting for the ribbon mode MIDI CC. */
     public static final Integer     RIBBON_MODE_CC_VAL              = Integer.valueOf (51);
     /** Setting for the ribbon mode note repeat. */
     public static final Integer     RIBBON_MODE_NOTE_REPEAT         = Integer.valueOf (52);
@@ -106,11 +107,11 @@ public class PushConfiguration extends AbstractConfiguration implements IGraphic
 
     /** Use ribbon for pitch bend. */
     public static final int         RIBBON_MODE_PITCH               = 0;
-    /** Use ribbon for midi CC. */
+    /** Use ribbon for MIDI CC. */
     public static final int         RIBBON_MODE_CC                  = 1;
-    /** Use ribbon for midi CC and pitch bend. */
+    /** Use ribbon for MIDI CC and pitch bend. */
     public static final int         RIBBON_MODE_CC_PB               = 2;
-    /** Use ribbon for pitch bend and midi CC. */
+    /** Use ribbon for pitch bend and MIDI CC. */
     public static final int         RIBBON_MODE_PB_CC               = 3;
     /** Use ribbon as volume fader. */
     public static final int         RIBBON_MODE_FADER               = 4;
@@ -283,7 +284,7 @@ public class PushConfiguration extends AbstractConfiguration implements IGraphic
      * @param arpeggiatorModes The available arpeggiator modes
      * @param isPush2 Use Push 1 or Push 2 controller?
      */
-    public PushConfiguration (final IHost host, final IValueChanger valueChanger, final ArpeggiatorMode [] arpeggiatorModes, final boolean isPush2)
+    public PushConfiguration (final IHost host, final IValueChanger valueChanger, final List<ArpeggiatorMode> arpeggiatorModes, final boolean isPush2)
     {
         super (host, valueChanger, arpeggiatorModes);
 
@@ -413,9 +414,9 @@ public class PushConfiguration extends AbstractConfiguration implements IGraphic
 
 
     /**
-     * Set the midi CC to use for the CC functionality of the ribbon.
+     * Set the MIDI CC to use for the CC functionality of the ribbon.
      *
-     * @param value The midi CC value
+     * @param value The MIDI CC value
      */
     public void setRibbonModeCC (final int value)
     {
@@ -424,9 +425,9 @@ public class PushConfiguration extends AbstractConfiguration implements IGraphic
 
 
     /**
-     * Get the midi CC to use for the CC functionality of the ribbon.
+     * Get the MIDI CC to use for the CC functionality of the ribbon.
      *
-     * @return The midi CC value
+     * @return The MIDI CC value
      */
     public int getRibbonModeCCVal ()
     {
@@ -463,9 +464,10 @@ public class PushConfiguration extends AbstractConfiguration implements IGraphic
      */
     public void changePadThreshold (final int control)
     {
-        final int value = this.valueChanger.changeValue (control, this.padThreshold, -100, PushControlSurface.PUSH_PAD_THRESHOLDS_NAME.length);
-        this.padThreshold = Math.max (0, Math.min (value, PushControlSurface.PUSH_PAD_THRESHOLDS_NAME.length - 1));
-        this.padThresholdSetting.set (PushControlSurface.PUSH_PAD_THRESHOLDS_NAME[this.padThreshold]);
+        final int size = PushControlSurface.PUSH_PAD_THRESHOLDS_NAME.size ();
+        final int value = this.valueChanger.changeValue (control, this.padThreshold, -100, size);
+        this.padThreshold = Math.max (0, Math.min (value, size - 1));
+        this.padThresholdSetting.set (PushControlSurface.PUSH_PAD_THRESHOLDS_NAME.get (this.padThreshold));
     }
 
 
@@ -476,9 +478,10 @@ public class PushConfiguration extends AbstractConfiguration implements IGraphic
      */
     public void changeVelocityCurve (final int control)
     {
-        final int value = this.valueChanger.changeValue (control, this.velocityCurve, -100, PushControlSurface.PUSH_PAD_CURVES_NAME.length);
-        this.velocityCurve = Math.max (0, Math.min (value, PushControlSurface.PUSH_PAD_CURVES_NAME.length - 1));
-        this.velocityCurveSetting.set (PushControlSurface.PUSH_PAD_CURVES_NAME[this.velocityCurve]);
+        final int size = PushControlSurface.PUSH_PAD_CURVES_NAME.size ();
+        final int value = this.valueChanger.changeValue (control, this.velocityCurve, -100, size);
+        this.velocityCurve = Math.max (0, Math.min (value, size - 1));
+        this.velocityCurveSetting.set (PushControlSurface.PUSH_PAD_CURVES_NAME.get (this.velocityCurve));
     }
 
 
@@ -1189,13 +1192,13 @@ public class PushConfiguration extends AbstractConfiguration implements IGraphic
      */
     private void activatePush1PadSettings (final ISettingsUI settingsUI)
     {
-        this.velocityCurveSetting = settingsUI.getEnumSetting ("Velocity Curve", CATEGORY_PADS, PushControlSurface.PUSH_PAD_CURVES_NAME, PushControlSurface.PUSH_PAD_CURVES_NAME[1]);
+        this.velocityCurveSetting = settingsUI.getEnumSetting ("Velocity Curve", CATEGORY_PADS, PushControlSurface.PUSH_PAD_CURVES_NAME, PushControlSurface.PUSH_PAD_CURVES_NAME.get (1));
         this.velocityCurveSetting.addValueObserver (value -> {
             this.velocityCurve = lookupIndex (PushControlSurface.PUSH_PAD_CURVES_NAME, value);
             this.notifyObservers (VELOCITY_CURVE);
         });
 
-        this.padThresholdSetting = settingsUI.getEnumSetting ("Pad Threshold", CATEGORY_PADS, PushControlSurface.PUSH_PAD_THRESHOLDS_NAME, PushControlSurface.PUSH_PAD_THRESHOLDS_NAME[20]);
+        this.padThresholdSetting = settingsUI.getEnumSetting ("Pad Threshold", CATEGORY_PADS, PushControlSurface.PUSH_PAD_THRESHOLDS_NAME, PushControlSurface.PUSH_PAD_THRESHOLDS_NAME.get (20));
         this.padThresholdSetting.addValueObserver (value -> {
             this.padThreshold = lookupIndex (PushControlSurface.PUSH_PAD_THRESHOLDS_NAME, value);
             this.notifyObservers (PAD_THRESHOLD);

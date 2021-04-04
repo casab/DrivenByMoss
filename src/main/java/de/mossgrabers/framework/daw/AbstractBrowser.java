@@ -13,7 +13,7 @@ import java.util.List;
 
 
 /**
- * Abstrct implementation of a browser. Adds functions based on generic interfaces.
+ * Abstract implementation of a browser. Adds functions based on generic interfaces.
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
@@ -35,7 +35,7 @@ public abstract class AbstractBrowser implements IBrowser
      * @param numFilterColumnEntries The number of entries in a filter column page
      * @param numResults The number of entries in a results column page
      */
-    public AbstractBrowser (final int numFilterColumnEntries, final int numResults)
+    protected AbstractBrowser (final int numFilterColumnEntries, final int numResults)
     {
         this.numFilterColumnEntries = numFilterColumnEntries;
         this.numResults = numResults;

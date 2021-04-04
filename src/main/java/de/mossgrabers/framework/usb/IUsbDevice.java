@@ -4,6 +4,9 @@
 
 package de.mossgrabers.framework.usb;
 
+import java.util.Optional;
+
+
 /**
  * Interface to an USB device.
  *
@@ -12,12 +15,12 @@ package de.mossgrabers.framework.usb;
 public interface IUsbDevice
 {
     /**
-     * Create an endpoint for the USB device.
+     * Create an end-point for the USB device.
      *
      * @param interfaceIndex The index of the registered interface
-     * @param endpointIndex The index of the registered endpoint
-     * @return The endpoint
-     * @throws UsbException Could not lookup or open the endpoint
+     * @param endpointIndex The index of the registered end-point
+     * @return The end-point
+     * @throws UsbException Could not lookup or open the end-point
      */
     IUsbEndpoint getEndpoint (final int interfaceIndex, final int endpointIndex) throws UsbException;
 
@@ -34,5 +37,5 @@ public interface IUsbDevice
      * @return The HID device
      * @throws UsbException Could not lookup or open the device
      */
-    IHidDevice getHidDevice () throws UsbException;
+    Optional<IHidDevice> getHidDevice () throws UsbException;
 }

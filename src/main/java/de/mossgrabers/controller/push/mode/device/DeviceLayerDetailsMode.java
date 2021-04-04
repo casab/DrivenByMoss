@@ -13,6 +13,7 @@ import de.mossgrabers.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.controller.display.ITextDisplay;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.IChannel;
+import de.mossgrabers.framework.daw.data.ILayer;
 import de.mossgrabers.framework.daw.data.bank.IDrumPadBank;
 import de.mossgrabers.framework.featuregroup.AbstractFeatureGroup;
 import de.mossgrabers.framework.featuregroup.AbstractMode;
@@ -20,14 +21,15 @@ import de.mossgrabers.framework.featuregroup.ViewManager;
 import de.mossgrabers.framework.utils.ButtonEvent;
 import de.mossgrabers.framework.view.Views;
 
+import java.util.Optional;
+
 
 /**
  * Mode for editing details of a layer.
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-@SuppressWarnings("rawtypes")
-public class DeviceLayerDetailsMode extends BaseMode
+public class DeviceLayerDetailsMode extends BaseMode<ILayer>
 {
     /**
      * Constructor.
@@ -35,12 +37,9 @@ public class DeviceLayerDetailsMode extends BaseMode
      * @param surface The control surface
      * @param model The model
      */
-    @SuppressWarnings("unchecked")
     public DeviceLayerDetailsMode (final PushControlSurface surface, final IModel model)
     {
-        super ("Layer details", surface, model, model.getCursorDevice ().getLayerOrDrumPadBank ());
-
-        model.getCursorDevice ().addHasDrumPadsObserver (hasDrumPads -> this.switchBanks (model.getCursorDevice ().getLayerOrDrumPadBank ()));
+        super ("Layer details", surface, model, model.getCursorDevice ().getLayerBank ());
     }
 
 
@@ -50,9 +49,11 @@ public class DeviceLayerDetailsMode extends BaseMode
     {
         if (event != ButtonEvent.UP)
             return;
-        final IChannel channel = (IChannel) this.bank.getSelectedItem ();
-        if (channel == null)
+        final Optional<ILayer> channelOpt = this.bank.getSelectedItem ();
+        if (channelOpt.isEmpty ())
             return;
+
+        final IChannel channel = channelOpt.get ();
 
         switch (index)
         {
@@ -105,25 +106,26 @@ public class DeviceLayerDetailsMode extends BaseMode
     @Override
     public int getButtonColor (final ButtonID buttonID)
     {
-        final IChannel channel = (IChannel) this.bank.getSelectedItem ();
-        if (channel == null)
+        final Optional<ILayer> channelOpt = this.bank.getSelectedItem ();
+        if (channelOpt.isEmpty ())
             return super.getButtonColor (buttonID);
 
         int index = this.isButtonRow (0, buttonID);
         if (index >= 0)
         {
+            final IChannel channel = channelOpt.get ();
             switch (index)
             {
                 case 0:
-                    return channel.isActivated () ? this.isPush2 ? PushColorManager.PUSH2_COLOR_YELLOW_MD : PushColorManager.PUSH1_COLOR_YELLOW_MD : this.isPush2 ? PushColorManager.PUSH2_COLOR_YELLOW_LO : PushColorManager.PUSH1_COLOR_YELLOW_LO;
+                    return this.colorManager.getColorIndex (channel.isActivated () ? PushColorManager.PUSH_YELLOW_MD : PushColorManager.PUSH_YELLOW_LO);
                 case 2:
-                    return channel.isMute () ? this.isPush2 ? PushColorManager.PUSH2_COLOR_ORANGE_HI : PushColorManager.PUSH1_COLOR_ORANGE_HI : this.isPush2 ? PushColorManager.PUSH2_COLOR_ORANGE_LO : PushColorManager.PUSH1_COLOR_ORANGE_LO;
+                    return this.colorManager.getColorIndex (channel.isMute () ? PushColorManager.PUSH_ORANGE_HI : PushColorManager.PUSH_ORANGE_LO);
                 case 3:
-                    return channel.isSolo () ? this.isPush2 ? PushColorManager.PUSH2_COLOR_ORANGE_HI : PushColorManager.PUSH1_COLOR_ORANGE_HI : this.isPush2 ? PushColorManager.PUSH2_COLOR_ORANGE_LO : PushColorManager.PUSH1_COLOR_ORANGE_LO;
+                    return this.colorManager.getColorIndex (channel.isSolo () ? PushColorManager.PUSH_ORANGE_HI : PushColorManager.PUSH_ORANGE_LO);
                 case 7:
-                    return this.isPush2 ? PushColorManager.PUSH2_COLOR_GREEN_HI : PushColorManager.PUSH1_COLOR_GREEN_HI;
+                    return this.colorManager.getColorIndex (PushColorManager.PUSH_GREEN_HI);
                 default:
-                    return this.isPush2 ? PushColorManager.PUSH2_COLOR_BLACK : PushColorManager.PUSH1_COLOR_BLACK;
+                    return this.colorManager.getColorIndex (PushColorManager.PUSH_BLACK);
             }
         }
 
@@ -143,12 +145,14 @@ public class DeviceLayerDetailsMode extends BaseMode
     @Override
     public void updateDisplay1 (final ITextDisplay display)
     {
-        final IChannel channel = (IChannel) this.bank.getSelectedItem ();
-        if (channel == null)
+        final Optional<ILayer> channelOpt = this.bank.getSelectedItem ();
+        if (channelOpt.isEmpty ())
         {
             display.setRow (1, "                     Please selecta layer...                        ");
             return;
         }
+
+        final IChannel channel = channelOpt.get ();
 
         final String layerName = channel.getName ();
         display.setBlock (0, 0, "Layer: " + layerName);
@@ -174,12 +178,14 @@ public class DeviceLayerDetailsMode extends BaseMode
     @Override
     public void updateDisplay2 (final IGraphicDisplay display)
     {
-        final IChannel channel = (IChannel) this.bank.getSelectedItem ();
-        if (channel == null)
+        final Optional<ILayer> channelOpt = this.bank.getSelectedItem ();
+        if (channelOpt.isEmpty ())
         {
             display.setMessage (3, "Please select a layer...");
             return;
         }
+
+        final IChannel channel = channelOpt.get ();
 
         display.addOptionElement ("Layer: " + channel.getName (), "", false, "", "Active", channel.isActivated (), false);
         display.addEmptyElement ();

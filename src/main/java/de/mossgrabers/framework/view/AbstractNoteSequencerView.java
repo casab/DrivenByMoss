@@ -47,7 +47,7 @@ public abstract class AbstractNoteSequencerView<S extends IControlSurface<C>, C 
      * @param model The model
      * @param useDawColors True to use the color of the current track for coloring the octaves
      */
-    public AbstractNoteSequencerView (final String name, final S surface, final IModel model, final boolean useDawColors)
+    protected AbstractNoteSequencerView (final String name, final S surface, final IModel model, final boolean useDawColors)
     {
         this (name, surface, model, 8, useDawColors);
     }
@@ -62,7 +62,7 @@ public abstract class AbstractNoteSequencerView<S extends IControlSurface<C>, C 
      * @param numDisplayCols The number of grid columns
      * @param useDawColors True to use the color of the current track for coloring the octaves
      */
-    public AbstractNoteSequencerView (final String name, final S surface, final IModel model, final int numDisplayCols, final boolean useDawColors)
+    protected AbstractNoteSequencerView (final String name, final S surface, final IModel model, final int numDisplayCols, final boolean useDawColors)
     {
         this (name, surface, model, numDisplayCols, 7, useDawColors);
     }
@@ -78,7 +78,7 @@ public abstract class AbstractNoteSequencerView<S extends IControlSurface<C>, C 
      * @param numSequencerRows The number of seuqencer rows
      * @param useDawColors True to use the color of the current track for coloring the octaves
      */
-    public AbstractNoteSequencerView (final String name, final S surface, final IModel model, final int numDisplayCols, final int numSequencerRows, final boolean useDawColors)
+    protected AbstractNoteSequencerView (final String name, final S surface, final IModel model, final int numDisplayCols, final int numSequencerRows, final boolean useDawColors)
     {
         super (name, surface, model, 128, numDisplayCols, numSequencerRows, useDawColors);
 
@@ -157,7 +157,7 @@ public abstract class AbstractNoteSequencerView<S extends IControlSurface<C>, C 
     /**
      * Handle button combinations on the note area of the sequencer.
      *
-     * @param clip The sequenced midi clip
+     * @param clip The sequenced MIDI clip
      * @param channel The MIDI channel of the note
      * @param step The step in the current page in the clip
      * @param row The row in the current page in the clip
@@ -370,13 +370,13 @@ public abstract class AbstractNoteSequencerView<S extends IControlSurface<C>, C 
 
 
     /**
-     * Calculates how many semi-notes are between the first and last 'pad'.
+     * Calculates how many seminotes are between the first and last 'pad'.
      *
-     * @return The number of semi-notes
+     * @return The number of seminotes
      */
     protected int getScrollOffset ()
     {
-        // In chromatic mode all semi-notes are present
+        // In chromatic mode all seminotes are present
         if (this.scales.isChromatic ())
             return this.numSequencerRows;
 

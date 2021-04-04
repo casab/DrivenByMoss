@@ -9,6 +9,7 @@ import de.mossgrabers.framework.observer.IItemSelectionObserver;
 import de.mossgrabers.framework.observer.IObserverManagement;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -59,7 +60,7 @@ public interface IBank<T> extends IObserverManagement
      *
      * @return The selected item or null if no item is selected on the current page
      */
-    T getSelectedItem ();
+    Optional<T> getSelectedItem ();
 
 
     /**
@@ -150,7 +151,7 @@ public interface IBank<T> extends IObserverManagement
      * Scrolls the bank page so that the item at the given position becomes visible as part of the
      * page. The position is the absolute index of the item in all the items the bank contains.
      *
-     * @param position The postion of the item to scroll to. The position is automaticaly adjusted
+     * @param position The position of the item to scroll to. The position is automaticaly adjusted
      *            to the beginning of a page
      */
     void scrollTo (int position);
@@ -160,7 +161,7 @@ public interface IBank<T> extends IObserverManagement
      * Scrolls the bank page so that the item at the given position becomes visible as part of the
      * page. The position is the absolute index of the item in all the items the bank contains.
      *
-     * @param position The postion of the item to scroll to
+     * @param position The position of the item to scroll to
      * @param adjustPage If true, the position is adjusted to the beginning of a page
      */
     void scrollTo (int position, boolean adjustPage);
